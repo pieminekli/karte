@@ -4,7 +4,7 @@
     <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
     <MyMap :md="md" @someEvent="toggleMethod()"/>
     <!-- <Xlist :md="md"/> -->
-    <!-- <BtnDownload :md="md"/> -->
+    <BtnDownload :md="md" @updEvent="updateData"/>
   </div>
 </template>
 
@@ -12,21 +12,12 @@
 // import HelloWorld from './components/HelloWorld.vue'
 import MyMap from './components/MyMap.vue'
 // import MyTest from './components/MyTest.vue'
-import Xlist from './components/MyList.vue'
+// import Xlist from './components/MyList.vue'
 import BtnDownload from './components/GenCsv.vue'
 
-import 'leaflet/dist/leaflet.css';
-
-import { Icon } from 'leaflet';
-
-delete Icon.Default.prototype._getIconUrl;
-Icon.Default.mergeOptions({
-  iconRetinaUrl: require('./assets/leaflet/marker-blue.svg'),
-  iconUrl: require('./assets/leaflet/marker-blue.svg'),
-  shadowUrl: require('./assets/leaflet/marker-shadow.png'),
-});
 
 import MyData from './assets/data.json';
+var MyData2=MyData.map(obj=> ({...obj, draggable: false})) // add new property to array
 
 export default {
   name: 'App',
@@ -35,14 +26,18 @@ export default {
     // MyTest,
     MyMap,
     // Xlist,
-    // BtnDownload,
+    BtnDownload,
 },
 data() {
   return {
-    md: MyData,
+    md: MyData2,
   };
 },
 methods: {
+  updateData(n){
+    // console.log(n[92])
+    this.md=n
+  },
   toggleMethod(){
     // this.md.map(obj=> ({...obj, draggable: 'false'}))
     // console.log(this.md)

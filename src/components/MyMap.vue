@@ -2,11 +2,13 @@
   <div>
     <l-map
       :zoom.sync="zoom"
-      :center="center"
+      :center.sync="center"
       :bounds=null
       :min-zoom="minZoom"
       :max-zoom="maxZoom"
       id="map"
+      ref="myMap"
+      :noBlockingAnimations="true"
     >
       <l-control-layers
         :position="layersPosition"
@@ -23,22 +25,17 @@
         layer-type="base"
         :detectRetina="tileProvider.detectRetina"
       />
-      <!-- <l-control-zoom :position="zoomPosition" /> -->
-      <!-- <l-control-attribution
-        :position="attributionPosition"
-        :prefix="attributionPrefix"
-      /> -->
 
-      <l-control :position="'topleft'">
+      <!-- <l-control :position="'topleft'">
         <div id="btn-edit" @click="toggleEdit" :class="{ active: isActive }"></div>
-      </l-control>
+      </l-control> -->
 
-      <l-control-scale :imperial="false" />
+      <l-control-scale :imperial="false" :position="'bottomleft'"/>
 
-      <l-layer-group
+      <!-- <l-layer-group
         layer-type="overlay"
         name="Edit"
-      >
+      > -->
 
       <v-marker-cluster :options="clusterOptions">
       <l-marker
@@ -47,40 +44,38 @@
         :visible="marker.visible"
         :draggable="marker.draggable"
         :lat-lng.sync="marker.position"
-        :icon="marker.icon"
+       :icon="myIc[marker.status]"
+        ref="marker"
       >
-        <l-popup :content="marker.id+'<br/>'+marker.name+'<br/>'+marker.description" />
+        <l-popup >
+            {{marker.id}}<br/>
+            {{marker.region}}, {{marker.parish}}, {{marker.location}}<br/>
+            {{marker.name}}<br/>
+            {{marker.description}}<br/>
+            Edit: <input v-model="marker.draggable" type="checkbox" >
+        </l-popup>
+        <!-- <l-icon
+          :icon-anchor="staticAnchor"
+          class-name="someExtraClass"> -->
+            <!-- <svg
+                width="24"
+                height="40"
+                viewBox="0 0 100 100"
+                version="1.1"
+                preserveAspectRatio="none"
+                xmlns="http://www.w3.org/2000/svg"
+                >
+                <path d="M0 0 L50 100 L100 0 Z" fill="#7A8BE7"></path>
+            </svg> -->
+        <!-- </l-icon> -->
       </l-marker>
       </v-marker-cluster>
 
-
-      </l-layer-group>
-
-      <!-- <l-layer-group
-        v-for="item in stuff"
-        :key="item.id"
-        :visible.sync="item.visible"
-        layer-type="overlay"
-        name="Layer 1"
-      > -->
-        <!-- <l-layer-group :visible="item.markersVisible">
-          <l-marker
-            v-for="marker in item.markers"
-            :key="marker.id"
-            :visible="marker.visible"
-            :draggable="marker.draggable"
-            :lat-lng="marker.position"
-            @click="alert(marker)"
-          />
-        </l-layer-group> -->
-        <!-- <l-polyline
-          :lat-lngs="item.polyline.points"
-          :visible="item.polyline.visible"
-          @click="alert(item.polyline)"
-        /> -->
+ 
       <!-- </l-layer-group> -->
-    </l-map>
 
+    </l-map>
+    <!-- <BtnDownload :md="md" @updEvent="updateData"/> -->
 
     <div id="xlist2">
       <button
@@ -91,20 +86,19 @@
       </button>
       <table>
         <tr>
-          <th>Marker</th>
+          <th>id</th>
           <th>Latitude</th>
           <th>Longitude</th>
           <th>name</th>
           <th>descr</th>
-          <th>Is Draggable ?</th>
-          <th>Is Visible ?</th>
-          <th>Remove</th>
+          <th>drag</th>
+          <!-- <th>Remove</th> -->
         </tr>
         <tr
-          v-for="(item, index) in markers"
-          :key="index"
+          v-for="(item) in markers"
+          :key="item.id" @click="posMark(item.id)"
         >
-          <td>{{ 'M ' + (index + 1) }}</td>
+          <td>{{item.id}}</td>
           <td>
             <input
               v-model.number="item.position.lat"
@@ -135,19 +129,14 @@
               type="checkbox"
             >
           </td>
-          <td style="text-align: center">
-            <input
-              v-model="item.visible"
-              type="checkbox"
-            >
-          </td>
-          <td style="text-align: center">
+        
+          <!-- <td style="text-align: center">
             <input
               type="button"
               value="X"
               @click="removeMarker(index)"
             >
-          </td>
+          </td> -->
         </tr>
       </table>
       
@@ -156,41 +145,81 @@
 </template>
 
 <script>
-import L, { latLngBounds } from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import {
   LMap,
   LTileLayer,
   LMarker,
-  // LPolyline,
-  LLayerGroup,
-  // LTooltip,
   LPopup,
-  // LControlZoom,
-  // LControlAttribution,
   LControlScale,
   LControlLayers,
-  LControl,
-  // LIcon
+//   LControl,
+//   LIcon,
 } from 'vue2-leaflet';
 
 import Vue2LeafletMarkerCluster from 'vue2-leaflet-markercluster'
 
+// import BtnDownload from './GenCsv.vue'
+
+import { Icon } from 'leaflet';
+
+delete Icon.Default.prototype._getIconUrl;
+// Icon.Default.mergeOptions({
+//   iconRetinaUrl: require('../assets/leaflet/marker-blue.png'),
+//   iconUrl: require('../assets/leaflet/marker-blue.png'),
+//   shadowUrl: require('../assets/leaflet/marker-shadow.png'),
+// });
+
+var baseIcon = Icon.Default.extend({
+    options: {
+        shadowUrl: require('../assets/leaflet/marker-shadow.png'),
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+    }
+});
+
+const greyIcon = new baseIcon({iconUrl: require('../assets/leaflet/marker-grey.png')})
+const blueIcon = new baseIcon({iconUrl: require('../assets/leaflet/marker-blue.png')})
+const redIcon = new baseIcon({iconUrl: require('../assets/leaflet/marker-red.png')})
+
+const icons = [
+    greyIcon, blueIcon, redIcon
+]
 
 
-
-let icn =  L.icon({
-    iconUrl: require('../assets/logo.png'),
-    iconSize: [32, 37],
-    iconAnchor: [16, 37]
-})
-
-var xx = 'yoo'
-// function aa(){
-//   alert("xxx")
-// }
-
-// const togdrag = '<p>text</p><input onclick="aa()" type="checkbox">'
-const togdrag = '<p>'+xx+'</p><input @click="alert()" type="checkbox">'
+// let mymarks = [
+//         {
+//           id: 'm1',
+//           position: { lat: 56.447313059250334, lng: 21.489257812500004 },
+//           name: '<h1>tooltip for marker1</h1>',
+//           draggable: true,
+//           visible: true,
+//           icon: icn,
+//         },
+//         {
+//           id: 'm2',
+//           position: { lat: 57.37393841871411, lng: 21.9122314453125 },
+//           name: togdrag,
+//           draggable: true,
+//           visible: true,
+//         },
+//         {
+//           id: 'm3',
+//           position: { lat: 56.851975784517116, lng: 23.966674804687504 },
+//           name: 'tooltip for marker3',
+//           draggable: true,
+//           visible: true,
+//         },
+//         {
+//           id: 'm4',
+//           position: { lat: 55.91842985630817, lng: 26.53198242187500 },
+//           name: 'tooltip for marker4',
+//           draggable: true,
+//           visible: true,
+//         },
+//       ]
 
 const clusterOptions = {
     chunkedLoading: true,
@@ -200,43 +229,11 @@ const clusterOptions = {
     disableClusteringAtZoom: '11'
 }
 
-let mymarks = [
-        {
-          id: 'm1',
-          position: { lat: 56.447313059250334, lng: 21.489257812500004 },
-          name: '<h1>tooltip for marker1</h1>',
-          draggable: true,
-          visible: true,
-          icon: icn,
-        },
-        {
-          id: 'm2',
-          position: { lat: 57.37393841871411, lng: 21.9122314453125 },
-          name: togdrag,
-          draggable: true,
-          visible: true,
-        },
-        {
-          id: 'm3',
-          position: { lat: 56.851975784517116, lng: 23.966674804687504 },
-          name: 'tooltip for marker3',
-          draggable: true,
-          visible: true,
-        },
-        {
-          id: 'm4',
-          position: { lat: 55.91842985630817, lng: 26.53198242187500 },
-          name: 'tooltip for marker4',
-          draggable: true,
-          visible: true,
-        },
-      ]
-
 const tileProviders = [
   {
     name: 'OSM',
     visible: true,
-    attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+    attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OSM</a>',
     url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     detectRetina: true,
   },
@@ -249,20 +246,22 @@ const tileProviders = [
 ];
 
 function myFunction(d) {
-  const d_coord = d.coordinates.split(",");
-    // var d_lat = parseFloat(d_coord[0])
-    // var d_lng = parseFloat(d_coord[1])
-    // var markerLocation = new L.LatLng(d_lat, d_lng);
+    // const d_coord = d.coordinates.split(",");
     let obj = {}
-    const pos = {lat: parseFloat(d_coord[0]), lng: parseFloat(d_coord[1])}
+    // const pos = {lat: parseFloat(d_coord[0]), lng: parseFloat(d_coord[1])}
     obj.id = d.id
+    obj.region = d.region
+    obj.parish = d.parish
+    obj.location = d.location
     obj.name = d.name
     obj.description = d.description
-    obj.position = pos
-    obj.draggable = true
+    obj.position = {lat: d.lat, lng: d.lng}
+    obj.draggable = false
+    obj.icon = icons[d.status]
     // d.map(obj=> ({...obj, Active: 'false'})) // add new property to array
-  return obj;
+    return obj;
 }
+
 
 export default {
   name: 'MyExample',
@@ -271,38 +270,41 @@ export default {
     LTileLayer,
     LMarker,
     // LPolyline,
-    LLayerGroup,
+    // LLayerGroup,
     // LTooltip,
     LPopup,
     // LControlZoom,
     // LControlAttribution,
     LControlScale,
     LControlLayers,
-    // LIcon
-    LControl,
-    'v-marker-cluster': Vue2LeafletMarkerCluster
+    // LIcon,
+    // LControl,
+    'v-marker-cluster': Vue2LeafletMarkerCluster,
+    //  BtnDownload,
   },
   props: { md: Array },
   data() {
     return {
+        myIc: icons,
       isActive: false,
       clusterOptions: clusterOptions,
       center: [56.74, 24.12],
-      // opacity: 0.6,
+    //   opacity: 0.6,
       zoom: 7,
       minZoom: 1,
       maxZoom: 20,
-    //   zoomPosition: 'topleft',
       layersPosition: 'topright',
       tileProviders: tileProviders,
-      markers: this.md.map(myFunction),
+    //   markers: this.md.map(myFunction),
     //   markers: mymarks,
+    markers:this.md,
 
-    //   bounds: latLngBounds(
-    //     { lat: 51.476483373501964, lng: -0.14668464136775586 },
-    //     { lat: 51.52948330894063, lng: -0.019140238291583955 }
-    //   ),
     };
+  },
+  watch: { 
+        md: function(newVal, oldVal) { // watch it
+          console.log('Prop changed: ', newVal, ' | was: ', oldVal)
+        }
   },
   created() {
     //  console.log(this.md)
@@ -329,14 +331,30 @@ export default {
         // alert("Click!");
         this.isActive = !this.isActive;
         // this.$emit('someEvent')
-        this.markers = this.markers.map(obj=> ({...obj, draggable: false}))
+        // this.markers = this.markers.map(obj=> ({...obj, draggable: false}))
         // console.log(this.markers)
+        // this.$refs.marker[92].mapObject.options.draggable=true
+        // this.$refs.marker[92].mapObject.dragging.enable()
+        // console.log(this.$refs.marker[92].mapObject)
+    },
+    posMark(n){
+        let selMark = this.markers[n-1]
+        this.$nextTick(() => {
+            this.$refs.myMap.mapObject.setView(selMark.position, 13);
+            let xx = this.$refs.marker[n-1].mapObject
+            setTimeout(function(){
+                xx.openPopup()
+            }, 800);
+        });
+        // console.log( selMark )
+
     }
+
   },
 };
 </script>
 
-<style scoped>
+<style >
 @import "~leaflet.markercluster/dist/MarkerCluster.css";
 @import "~leaflet.markercluster/dist/MarkerCluster.Default.css";
 

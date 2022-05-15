@@ -2,6 +2,7 @@
   "name": "p-vue2",
   "version": "0.1.0",
   "private": true,
+  "license": "(MIT OR Apache-2.0)",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -36,7 +37,9 @@
     "parserOptions": {
       "parser": "@babel/eslint-parser"
     },
-    "rules": {"no-unused-vars": "off" }
+    "rules": {
+      "no-unused-vars": "off"
+     }
   },
   "browserslist": [
     "> 1%",

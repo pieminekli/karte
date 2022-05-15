@@ -1,5 +1,5 @@
 <template>
-    <a href="#" id="btn-download" @click="genCsv()">Download CSV</a>
+    <a href="#" id="btn-download" @click="genCsv()">Download</a>
 </template>
 
 
@@ -18,37 +18,46 @@ export default {
   methods: {
 
     // generate csv and download
-    genCsv: function (jdata) {
-        console.log(this.md)
-    // function wrapq(d){
-    //     d = d.replaceAll('"', '""')
-    //     if (d.includes(",") || d.includes('"')){
-    //         d = '"'+d+'"'
-    //     }
-    //     return d
-    // }
+    genCsv: function () {
+        var jdata = this.md
+        this.$emit('updEvent', jdata)
+        // console.log(this.md[92].position)
 
-    // let csv=''
-    // for (let d in jdata){
-    //     let stri = ''
-    //     stri += jdata[d].id+','
-    //     stri += wrapq(jdata[d].region)+','
-    //     stri += wrapq(jdata[d].parish)+','
-    //     stri += wrapq(jdata[d].location)+','
-    //     stri += wrapq(jdata[d].name)+','
-    //     stri += wrapq(jdata[d].date1)+','
-    //     stri += wrapq(jdata[d].description)+','
-    //     stri += wrapq(jdata[d].type)+','
-    //     stri += wrapq(jdata[d].date2)+','
-    //     stri += wrapq(jdata[d].coordinates)+','
-    //     stri += jdata[d].status+','
-    //     stri += wrapq(jdata[d].url)+','
-    //     stri += jdata[d].locked+','
-    //     stri += jdata[d].datetime+'\r\n'
-    //     csv+=stri
-    //     // console.log(stri)
-    // }
-    // // console.log(cs)
+        function wrapq(d){
+            if (d===String){
+            // d = d.replaceAll('"', '""')
+            d = d.replace(/"/g, '""')
+            // .replace(/:insertx:/g, 'hello!');
+            if (d.includes(",") || d.includes('"')){
+                d = '"'+d+'"'
+            }
+            }
+            return d
+        }
+
+        let csv=''
+        for (let d in jdata){
+            let stri = ''
+            stri += jdata[d].id+','
+            stri += wrapq(jdata[d].region)+','
+            stri += wrapq(jdata[d].parish)+','
+            stri += wrapq(jdata[d].location)+','
+            stri += wrapq(jdata[d].name)+','
+            stri += wrapq(jdata[d].date1)+','
+            stri += wrapq(jdata[d].description)+','
+            stri += wrapq(jdata[d].type)+','
+            stri += wrapq(jdata[d].date2)+','
+            stri += wrapq(jdata[d].position.lat)+','
+            stri += wrapq(jdata[d].position.lng)+','
+            stri += jdata[d].status+','
+            stri += wrapq(jdata[d].url)+','
+            stri += jdata[d].locked+','
+            stri += jdata[d].datetime+'\r\n'
+            csv+=stri
+            console.log(stri)
+            // console.log(wrapq(jdata[d].position.lat))
+        }
+        // console.log(csv)
   
 
     // var fileName = "file.csv";
@@ -70,18 +79,18 @@ export default {
 <style>
 #btn-download{
     position: fixed;
-    top: 0;
+    top: 65px;
     right: 0;
     z-index: 100001;
     margin: 10px;
 
     background: rgba(70,142,189,0.8);
     color: white;
-    font-size: 14px;
+    font-size: 12px;
     text-align: center;
     display: block;
-    padding: 10px;
-    width: 110px;
+    padding: 5px;
+    width: 64px;
     text-decoration: none;
     border-radius: 6px;
 }
