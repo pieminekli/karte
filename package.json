@@ -2,7 +2,7 @@
   "name": "p-vue2",
   "version": "0.1.0",
   "private": true,
-  "license": "(MIT OR Apache-2.0)",
+  "license": "MIT",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",

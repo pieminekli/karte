@@ -1,8 +1,6 @@
 <template>
   <div id="app">
-    <!-- <img alt="Vue logo" src="./assets/logo.png"> -->
-    <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
-    <MyMap :md="md" @someEvent="toggleMethod()"/>
+    <MyMap :md="md" />
     <!-- <Xlist :md="md"/> -->
     <BtnDownload :md="md" @updEvent="updateData"/>
   </div>
@@ -38,18 +36,16 @@ methods: {
     // console.log(n[92])
     this.md=n
   },
-  toggleMethod(){
-    // this.md.map(obj=> ({...obj, draggable: 'false'}))
-    // console.log(this.md)
-  }
+
 }
 }
 </script>
 
 <style>
-body{
+html, body{
   margin: 0;
   padding: 0;
+  height: 100%;
 }
 
 #app {

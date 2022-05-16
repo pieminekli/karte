@@ -1,5 +1,5 @@
 <template>
-    <a href="#" id="btn-download" @click="genCsv()">Download</a>
+    <a :href="fileurl" :download="filename" @click="genCsv">Download</a>
 </template>
 
 
@@ -12,7 +12,8 @@ export default {
   props: {md: Array},
   data() {
     return {
-    //   md: MyData.data,
+        fileurl: '#',
+        filename: null
     };
   },
   methods: {
@@ -25,15 +26,23 @@ export default {
 
         function wrapq(d){
             if (d===String){
-            // d = d.replaceAll('"', '""')
-            d = d.replace(/"/g, '""')
-            // .replace(/:insertx:/g, 'hello!');
-            if (d.includes(",") || d.includes('"')){
-                d = '"'+d+'"'
-            }
+                // d = d.replaceAll('"', '""')
+                d = d.replace(/"/g, '""')
+                // .replace(/:insertx:/g, 'hello!');
+                if (d.includes(",") || d.includes('"')){
+                    d = '"'+d+'"'
+                }
             }
             return d
         }
+
+        // function makeid() {
+        //     var text = "";
+        //     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        //     for (var i = 0; i < 6; i++)
+        //         text += possible.charAt(Math.floor(Math.random() * possible.length));
+        //     return text;
+        // }
 
         let csv=''
         for (let d in jdata){
@@ -54,21 +63,18 @@ export default {
             stri += jdata[d].locked+','
             stri += jdata[d].datetime+'\r\n'
             csv+=stri
-            console.log(stri)
+            // console.log(stri)
             // console.log(wrapq(jdata[d].position.lat))
         }
         // console.log(csv)
   
+    var fileContent = csv;
+    var myFile = new Blob([fileContent], {type: 'text/csv;charset=utf-8;'});
 
-    // var fileName = "file.csv";
-    // var fileContent = csv;
-    // var myFile = new Blob([fileContent], {type: 'text/csv;charset=utf-8;'});
+    window.URL = window.URL || window.webkitURL;
 
-    // window.URL = window.URL || window.webkitURL;
-    // var dlBtn = document.getElementById("btn-download");
-
-    // dlBtn.setAttribute("href", window.URL.createObjectURL(myFile));
-    // dlBtn.setAttribute("download", fileName);
+    this.filename = 'pieminekli.csv'
+    this.fileurl=window.URL.createObjectURL(myFile)
 }
 
 
@@ -76,22 +82,24 @@ export default {
 };
 </script>
 
-<style>
-#btn-download{
-    position: fixed;
-    top: 65px;
-    right: 0;
-    z-index: 100001;
-    margin: 10px;
+<style scoped>
+    a{
+        position: fixed;
+        top: 68px;
+        right: 0;
+        z-index: 100001;
+        margin: 10px;
 
-    background: rgba(70,142,189,0.8);
-    color: white;
-    font-size: 12px;
-    text-align: center;
-    display: block;
-    padding: 5px;
-    width: 64px;
-    text-decoration: none;
-    border-radius: 6px;
-}
+        background: rgba(255,255,255,1);
+        color: black;
+        font-size: 12px;
+        text-align: center;
+        display: block;
+        padding: 5px;
+        width: 64px;
+        text-decoration: none;
+        border-radius: 4px;
+        box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.2);
+        
+    }
 </style>
