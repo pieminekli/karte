@@ -1,4 +1,4 @@
-# p-vue2
+# Pieminekļu karte
 
 ## Project setup
 ```
