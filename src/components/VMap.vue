@@ -19,9 +19,10 @@
                     v-for="marker in markers"
                     :key="marker.id"
                     :draggable="marker.draggable"
-                    :lat-lng.sync="marker.position"
+                    :latLng.sync="marker.position"
                     :icon="myIcn[marker.status]"
                     ref="marker"
+                    @dragend="marker.datetime=dateNow()"
                 >
                     <l-popup class="popup-wrap">
                         <div class="image" :style="{ backgroundImage: 'url(images/gallery/' + marker.id + '.jpg)' }"></div>
@@ -37,10 +38,10 @@
                                 <label :for="'cb' + marker.id">Labot</label>
                                 </div>
                                 <div>
-                                   
-                                    <select v-model="marker.status">
-                                        <option value=1>Pastāv dabā</option>
-                                        <option value=2>Apspriešanā</option>
+                                   Statuss:
+                                    <select v-model="marker.status" @change="marker.datetime=dateNow()">
+                                        <option value=1>Dabā eksistē</option>
+                                        <option value=2>Notiek diskusijas</option>
                                         <option value=0>Nojaukts</option>
                                     </select>
                                 </div>
@@ -147,9 +148,11 @@ export default {
         // });
 
         // document.querySelector('.leaflet-popup-close-button').removeAttribute("href");
-        
     },
     methods: {
+        dateNow(){
+            return new Date().toJSON()
+        },
         alert(item) {
         //   alert('this is ' + JSON.stringify(item));
         // this.$refs.myMap.mapObject.setView(item.position);
@@ -199,6 +202,16 @@ export default {
                 setTimeout(function () {
                     xx.openPopup();
                 }, 700);
+
+                // remove close href
+                setTimeout(function () {
+                    const highlightedItems = document.querySelectorAll(".leaflet-popup-close-button");
+                    highlightedItems.forEach(function(u) {
+                        u.removeAttribute("href")
+                        u.style.cursor = "pointer";
+                    })
+                }, 800);
+        
             });
         },
     },
