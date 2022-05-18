@@ -1,5 +1,5 @@
 <template>
-    <a :href="fileurl" :download="filename" @click="genCsv">Download</a>
+    <a :href="fileurl" :download="filename" @click="makeCsv">Download</a>
 </template>
 
 <script>
@@ -15,15 +15,16 @@ export default {
     },
     methods: {
         // generate csv and download
-        genCsv: function () {
-            var jdata = this.md;
-            this.$emit("updEvent", jdata);
+        makeCsv() {
+            let markers = this.md;
+            // this.$emit("updEvent", markers);
             // console.log(this.md[92].position)
 
-            function wrapq(d) {
-                if (d === String) {
-                    // d = d.replaceAll('"', '""')
+            function checkField(d) {
+                if (typeof d === "string") {
+                    //replace quotes with double quotes
                     d = d.replace(/"/g, '""');
+                    //if field has comma or quotes, wrap it with quotes
                     if (d.includes(",") || d.includes('"')) {
                         d = '"' + d + '"';
                     }
@@ -39,38 +40,38 @@ export default {
             //     return text;
             // }
 
-            let csv = "";
-            for (let d in jdata) {
-                let stri = "";
-                stri += jdata[d].id + ",";
-                stri += wrapq(jdata[d].region) + ",";
-                stri += wrapq(jdata[d].parish) + ",";
-                stri += wrapq(jdata[d].location) + ",";
-                stri += wrapq(jdata[d].name) + ",";
-                stri += wrapq(jdata[d].date1) + ",";
-                stri += wrapq(jdata[d].description) + ",";
-                stri += wrapq(jdata[d].type) + ",";
-                stri += wrapq(jdata[d].date2) + ",";
-                stri += wrapq(jdata[d].position.lat) + ",";
-                stri += wrapq(jdata[d].position.lng) + ",";
-                stri += jdata[d].status + ",";
-                stri += wrapq(jdata[d].url) + ",";
-                stri += jdata[d].locked + ",";
-                stri += jdata[d].datetime + "\r\n";
-                csv += stri;
-                // console.log(stri)
+            let csvRows = "";
+            for (const m of markers) {
+                let row = [
+                    m.id,
+                    checkField(m.region),
+                    checkField(m.parish),
+                    checkField(m.location),
+                    checkField(m.name),
+                    checkField(m.date1),
+                    checkField(m.description),
+                    checkField(m.type),
+                    checkField(m.date2),
+                    m.position.lat,
+                    m.position.lng,
+                    m.status,
+                    checkField(m.url),
+                    m.locked,
+                    m.datetime
+                ].join()
+                csvRows += row + "\r\n";
+                // console.log(m)
             }
-            // console.log(csv)
+            console.log(csvRows)
 
-            var fileContent = csv;
-            var myFile = new Blob([fileContent], {
+            var csvFile = new Blob([csvRows], {
                 type: "text/csv;charset=utf-8;",
             });
 
             window.URL = window.URL || window.webkitURL;
 
             this.filename = "pieminekli.csv";
-            this.fileurl = window.URL.createObjectURL(myFile);
+            this.fileurl = window.URL.createObjectURL(csvFile);
         },
     },
 };
@@ -83,7 +84,6 @@ a {
     right: 0;
     z-index: 100001;
     margin: 10px;
-
     background: rgba(255, 255, 255, 1);
     color: black;
     font-size: 12px;

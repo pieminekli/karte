@@ -18,92 +18,52 @@
                 <l-marker
                     v-for="marker in markers"
                     :key="marker.id"
-                    :visible="marker.visible"
                     :draggable="marker.draggable"
                     :lat-lng.sync="marker.position"
-                    :icon="myIc[marker.status]"
+                    :icon="myIcn[marker.status]"
                     ref="marker"
-                   
                 >
-                    <l-popup>
-                        Nr: {{ marker.id }}<br />
-                        {{ marker.region }}, {{ marker.parish }}, {{ marker.location }}<br />
-                        {{ marker.name }}, {{ marker.date1 }}<br />
-                        <hr />
-                        <input v-model="marker.draggable" type="checkbox" :id="'cb' + marker.id" />
-                        <label :for="'cb' + marker.id">Move marker</label>
+                    <l-popup class="popup-wrap">
+                        <div class="image" :style="{ backgroundImage: 'url(images/gallery/' + marker.id + '.jpg)' }"></div>
+                        <div class="content">
+                            {{ [marker.region, marker.parish, marker.location].filter(Boolean).join(', ') }}<br />
+                            {{ [marker.name, marker.type, marker.date1].filter(Boolean).join(', ') }}<br />
+                        </div>
+                        <div class="manage">
+                            <hr />
+                            <div>
+                                <div>
+                                <input v-model="marker.draggable" type="checkbox" :id="'cb' + marker.id" />
+                                <label :for="'cb' + marker.id">Move</label>
+                                </div>
+                                <!-- <div>Statuss: {{ marker.status }}</div>
+                                <div>Slēgts: {{ marker.locked }}</div> -->
+                                <div>Id: {{ marker.id }}</div>
+                            </div>
+                        </div>
                     </l-popup>
                 </l-marker>
             </v-marker-cluster>
         </l-map>
-        <!-- <BtnDownload :md="md" @updEvent="updateData"/> -->
-
-        <div id="xlist2">
-            <!-- <button name="button" @click="addMarker">Add a marker</button> -->
-            <table>
-                <tr>
-                    <th>nr</th>
-                    <th>region</th>
-                    <th>location</th>
-                    <th>name</th>
-                    <th>date</th>
-                    <th>description</th>
-                    <th>lat</th>
-                    <th>lng</th>
-                    <th>move</th>
-                    <!-- <th>Remove</th> -->
-                </tr>
-                <tr v-for="item in markers" :key="item.id" @click="posMark(item.id)">
-                    <td>{{ item.id }}</td>
-                    <td>{{ item.region }}</td>
-                    <td>{{ item.parish }}, {{ item.location }}</td>
-                    <td>{{ item.name }}</td>
-                    <td>{{ item.date1 }}</td>
-                    <td>{{ item.description }}</td>
-                    <!-- <td>
-            <input v-model="item.name" type="text" />
-          </td>
-          <td>
-            <input v-model="item.description" type="text" />
-          </td> -->
-
-                    <td>{{ item.position.lat }}</td>
-                    <td>{{ item.position.lng }}</td>
-
-                    <td style="text-align: center">
-                        <input v-model="item.draggable" type="checkbox" />
-                    </td>
-
-                    <!-- <td style="text-align: center">
-            <input
-              type="button"
-              value="X"
-              @click="removeMarker(index)"
-            >
-          </td> -->
-                </tr>
-            </table>
-        </div>
+        <VList :md="markers" />
     </div>
 </template>
 
 <script>
 import "leaflet/dist/leaflet.css";
 import { LMap, LTileLayer, LMarker, LPopup, LControlScale, LControlLayers } from "vue2-leaflet";
-
 import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
-
-// import BtnDownload from './GenCsv.vue'
-
+// import L from "leaflet";
 import { Icon } from "leaflet";
-delete Icon.Default.prototype._getIconUrl;
+import VList from './VList.vue'
 
+delete Icon.Default.prototype._getIconUrl;
 var baseIcon = Icon.Default.extend({
     options: {
         shadowUrl: "images/leaflet/marker-shadow.png",
-        iconSize: [25, 41],
+        iconSize: [25, 40],
         iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
+        popupAnchor: [0, -34],
         shadowSize: [41, 41],
     },
 });
@@ -149,10 +109,6 @@ const tileProviders = [
     },
 ];
 
-function randomNumber(min, max) {
-    return Math.random() * (max - min) + min;
-}
-
 export default {
     name: "vue-map",
     components: {
@@ -163,32 +119,55 @@ export default {
         LControlScale,
         LControlLayers,
         "v-marker-cluster": Vue2LeafletMarkerCluster,
-        //  BtnDownload,
+        VList,
     },
     props: { md: Array },
     data() {
         return {
-            myIc: icons,
+            myIcn: icons,
             isActive: false,
-
             clusterOptions: clusterOptions,
-
             center: [56.74, 24.12],
             zoom: 7,
             tileProviders: tileProviders,
-
             markers: this.md,
         };
     },
-    methods: {
-    alert(item) {
-    //   alert('this is ' + JSON.stringify(item));
-    // this.$refs.myMap.mapObject.setView(item.position);
+    mounted(){
+        //remove popup href
+        document.querySelector('.leaflet-pane.leaflet-popup-pane').addEventListener('click', event => {
+            event.preventDefault();
+        });
     },
-        addMarker: function () {
+    methods: {
+        alert(item) {
+        //   alert('this is ' + JSON.stringify(item));
+        // this.$refs.myMap.mapObject.setView(item.position);
+        // var rect = item.getBoundingClientRect();
+            // console.log(rect.top, rect.right, rect.bottom, rect.left);
+            // console.log(this.$refs.marker[item.id]);
+            // console.log(this.$refs.myMap.mapObject.project(item.position, this.zoom))
+            // console.log(this.$refs.marker[item.id])
+
+        // const cont =        'Nr: '+item.id +'<br />'+
+        //                     item.region+ ', ' +item.parish+ ', ' +item.location+'<br />'+
+        //                     item.name+ ', ' +item.date1 +'<br />'+
+        //                     '<hr />'
+
+        // const map = this.$refs.myMap.mapObject;
+        // var popup = new L.popup()
+        //   .setLatLng(item.position)
+        //   .setContent(cont)
+        //   .openOn(map)
+
+        },
+        addMarker() {
+            function rndNumber(min, max) {
+                return Math.random() * (max - min) + min;
+            }
             const pos = {
-                lat: 57.11835 + randomNumber(-0.05, 0.05),
-                lng: 23.66455 + randomNumber(-0.05, 0.05),
+                lat: 57.11835 + rndNumber(-0.05, 0.05),
+                lng: 23.66455 + rndNumber(-0.05, 0.05),
             };
             const newMarker = {
                 id: this.markers.length + 1,
@@ -199,19 +178,18 @@ export default {
             this.markers.push(newMarker);
             this.$refs.myMap.mapObject.setView(pos, 11);
         },
-        removeMarker: function (index) {
+        removeMarker(index) {
             this.markers.splice(index, 1);
         },
-        posMark(n) {
+        centerPopup(n) {
             let selMark = this.markers[n - 1];
             this.$nextTick(() => {
                 this.$refs.myMap.mapObject.setView(selMark.position, 13);
                 let xx = this.$refs.marker[n - 1].mapObject;
                 setTimeout(function () {
                     xx.openPopup();
-                }, 800);
+                }, 700);
             });
-            // console.log( selMark )
         },
     },
 };
@@ -226,67 +204,46 @@ export default {
 #map {
     height: 100%;
 }
-
 #map {
     width: 100%;
 }
-
-#xlist2 {
-    display: none;
-}
-
 #map .leaflet-popup-content {
     max-width: 260px;
 }
-
 #map hr {
     border: 0;
     height: 1px;
     background-color: rgb(237, 237, 237);
+}
+.popup-wrap{
+    display: flex;
+    flex-wrap: wrap;
+}
+.popup-wrap .image{
+    width: 70px;
+    height: 70px;
+    background-size: cover;
+    background-color: #f0eef1;
+}
+.popup-wrap .content{
+    width: calc(100% - 80px);
+    margin-left: 10px;
+}
+.popup-wrap .manage{
+    width:100%;
+}
+.popup-wrap .manage > div{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 @media (min-width: 600px) {
     #map {
         height: 50%;
     }
-
     #map .leaflet-popup-content {
         max-width: 320px;
-    }
-
-    #xlist2 {
-        font-size: 12px;
-        display: block;
-        height: 50%;
-        overflow: scroll;
-        overflow-x: hidden;
-    }
-
-    #xlist2 button {
-        position: fixed;
-        bottom: 20px;
-        right: 40px;
-        color: white;
-        background: #328bf2;
-        padding: 8px;
-        border: none;
-        border-radius: 5px;
-    }
-
-    /* #xlist2 tr:nth-child(even){background-color: #f2f2f2;} */
-
-    #xlist2 tr:hover {
-        background-color: rgba(20, 116, 250, 0.1);
-    }
-
-    #xlist2 table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    #xlist2 th,
-    td {
-        border: 1px solid #ddd;
-        padding: 8px;
     }
 }
 

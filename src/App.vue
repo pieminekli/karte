@@ -1,35 +1,36 @@
 <template>
     <div id="app">
-        <MyMap :md="md" />
-        <!-- <Xlist :md="md"/> -->
-        <BtnDownload :md="md" @updEvent="updateData" />
+        <VMap :md="md" />
+        <VCsv :md="md" @updEvent="updateData" />
+        <!-- <VList :md="md"/> -->
     </div>
 </template>
 
 <script>
-import MyMap from "./components/MyMap.vue";
-// import Xlist from './components/MyList.vue'
-import BtnDownload from "./components/GenCsv.vue";
+import VMap from "./components/VMap.vue";
+import VCsv from "./components/VCsv.vue";
+import data from "./assets/data.json";
+// import VList from './components/VList.vue'
 
-import MyData from "./assets/data.json";
-var MyData2 = MyData.map((obj) => ({ ...obj, draggable: false })); // add new property to array
+// add drag property to array
+var data2 = data.map((obj) => ({ ...obj, draggable: false }));
 
 export default {
     name: "App",
     components: {
-        MyMap,
-        // Xlist,
-        BtnDownload,
+        VMap,
+        VCsv,
+        // VList,
     },
     data() {
         return {
-            md: MyData2,
+            md: data2,
         };
     },
     methods: {
         updateData(n) {
             // console.log(n[92])
-            this.md = n;
+            // this.md = n;
         },
     },
 };
@@ -41,9 +42,6 @@ body {
     margin: 0;
     padding: 0;
     height: 100%;
-}
-
-#app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
 }
 </style>
