@@ -7,12 +7,13 @@
         <!-- <button id="show-modal" @click="showModal = true">Show Modal</button> -->
         <VModal v-if="showModal" @close="showModal = false">
             <h3 slot="header">Informācija</h3>
-            <!-- <p slot="body"> -->
-                <p slot="body">Karte ir izstrādes stadijā un lielākajai daļai marķieru atrašanās vieta ir aptuvena. </p>
-                <p slot="body">Precizē marķieru atrašanās zināmajiem pieminekļiem. </p>
-                <p slot="body">Lejuplādē izlaboto *.csv failu un sūti uz pieminekli@protonmail.com </p>
-                <p slot="body">Vai arī veic labojumus: github.com </p>
-            <!-- </p> -->
+
+            <template #body>
+                <p>Karte ir izstrādes stadijā! Lielākajai daļai marķieru atrašanās vieta ir aptuvena. </p>
+                <p>Precizē marķieru atrašanās vietu zināmajiem pieminekļiem. </p>
+                <p>Lejuplādē laboto *.csv failu un sūti uz pieminekli@protonmail.com </p>
+                <p>Vai arī veic labojumus <a href="https://github.com/pieminekli/karte">github.com</a> </p>
+            </template>
         </VModal>
     </div>
 </template>

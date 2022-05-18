@@ -76,7 +76,14 @@ export default {
 }
 
 .modal-default-button {
-
+    background: #4560f7;
+    border: none;
+    width: 140px;
+    padding: 10px;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    margin-top: 16px;
 }
 
 @media (min-width: 600px) {

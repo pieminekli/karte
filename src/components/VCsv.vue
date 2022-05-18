@@ -1,5 +1,5 @@
 <template>
-    <a :href="fileurl" :download="filename" @click="makeCsv">Download</a>
+    <a :href="fileurl" :download="filename" @click="makeCsv">Lejupādēt</a>
 </template>
 
 <script>

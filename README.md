@@ -20,5 +20,10 @@ yarn build
 yarn lint
 ```
 
+### Deployemnt of /dist folder to gh-pages
+```
+yarn deploy
+```
+
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).

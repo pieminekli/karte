@@ -34,10 +34,17 @@
                             <div>
                                 <div>
                                 <input v-model="marker.draggable" type="checkbox" :id="'cb' + marker.id" />
-                                <label :for="'cb' + marker.id">Move</label>
+                                <label :for="'cb' + marker.id">Labot</label>
                                 </div>
-                                <!-- <div>Statuss: {{ marker.status }}</div>
-                                <div>Slēgts: {{ marker.locked }}</div> -->
+                                <div>
+                                   
+                                    <select v-model="marker.status">
+                                        <option value=1>Pastāv dabā</option>
+                                        <option value=2>Apspriešanā</option>
+                                        <option value=0>Nojaukts</option>
+                                    </select>
+                                </div>
+                                <!-- <div>Slēgts: {{ marker.locked }}</div> -->
                                 <div>Id: {{ marker.id }}</div>
                             </div>
                         </div>
@@ -217,6 +224,10 @@ export default {
     border: 0;
     height: 1px;
     background-color: rgb(237, 237, 237);
+    margin: 6px 0 14px;
+}
+#map .leaflet-popup-content {
+    margin: 14px 14px 14px 14px;
 }
 .popup-wrap{
     display: flex;
@@ -239,6 +250,17 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.popup-wrap .manage label{
+vertical-align: bottom;
+cursor: pointer;
+}
+.popup-wrap .manage input{
+vertical-align: middle;
+}
+.popup-wrap .manage select{
+/* font-size: 12px; */
 }
 
 @media (min-width: 600px) {
