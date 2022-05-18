@@ -62,7 +62,7 @@ export default {
                 csvRows += row + "\r\n";
                 // console.log(m)
             }
-            console.log(csvRows)
+            // console.log(csvRows)
 
             var csvFile = new Blob([csvRows], {
                 type: "text/csv;charset=utf-8;",
@@ -79,10 +79,10 @@ export default {
 
 <style scoped>
 a {
-    position: fixed;
+    position: absolute;
     top: 68px;
     right: 0;
-    z-index: 100001;
+    z-index: 1001;
     margin: 10px;
     background: rgba(255, 255, 255, 1);
     color: black;

@@ -3,12 +3,24 @@
         <VMap :md="md" />
         <VCsv :md="md" @updEvent="updateData" />
         <!-- <VList :md="md"/> -->
+
+        <!-- <button id="show-modal" @click="showModal = true">Show Modal</button> -->
+        <VModal v-if="showModal" @close="showModal = false">
+            <h3 slot="header">Informācija</h3>
+            <!-- <p slot="body"> -->
+                <p slot="body">Karte ir izstrādes stadijā un lielākajai daļai marķieru atrašanās vieta ir aptuvena. </p>
+                <p slot="body">Precizē marķieru atrašanās zināmajiem pieminekļiem. </p>
+                <p slot="body">Lejuplādē izlaboto *.csv failu un sūti uz pieminekli@protonmail.com </p>
+                <p slot="body">Vai arī veic labojumus: github.com </p>
+            <!-- </p> -->
+        </VModal>
     </div>
 </template>
 
 <script>
 import VMap from "./components/VMap.vue";
 import VCsv from "./components/VCsv.vue";
+import VModal from "./components/VModal.vue";
 import data from "./assets/data.json";
 // import VList from './components/VList.vue'
 
@@ -21,10 +33,12 @@ export default {
         VMap,
         VCsv,
         // VList,
+        VModal,
     },
     data() {
         return {
             md: data2,
+            showModal: true
         };
     },
     methods: {

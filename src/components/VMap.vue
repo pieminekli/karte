@@ -135,9 +135,12 @@ export default {
     },
     mounted(){
         //remove popup href
-        document.querySelector('.leaflet-pane.leaflet-popup-pane').addEventListener('click', event => {
-            event.preventDefault();
-        });
+        // document.querySelector('.leaflet-pane.leaflet-popup-pane').addEventListener('click', event => {
+        //     event.preventDefault();
+        // });
+
+        // document.querySelector('.leaflet-popup-close-button').removeAttribute("href");
+        
     },
     methods: {
         alert(item) {
