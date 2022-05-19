@@ -599,13 +599,13 @@
         "type": "Piemiņas plāksne",
         "date2": "1969. g.",
         "position": {
-            "lat": 57.3494748,
-            "lng": 27.5217182
+            "lat": 57.34843050093242,
+            "lng": 27.52701759338379
         },
         "status": 1,
         "url": "/",
         "locked": 0,
-        "datetime": "2022-05-16T02:13:03.128031"
+        "datetime": "2022-05-19T09:27:33.026Z"
     },
     {
         "id": 33,
@@ -1606,13 +1606,13 @@
         "type": "Melna pulēta granīta piemineklis - obelisks",
         "date2": "20. gs. 70. g.",
         "position": {
-            "lat": 56.8229465,
-            "lng": 25.6217815
+            "lat": 56.79436545816212,
+            "lng": 25.71779251098633
         },
         "status": 1,
         "url": "/",
         "locked": 0,
-        "datetime": "2022-05-16T02:13:03.128031"
+        "datetime": "2022-05-19T09:21:36.539Z"
     },
     {
         "id": 86,
@@ -1625,13 +1625,13 @@
         "type": "Laukakmens ar melna granīta piemiņas plāksni",
         "date2": "1969.09.",
         "position": {
-            "lat": 56.8229465,
-            "lng": 25.6217815
+            "lat": 56.79617997197841,
+            "lng": 25.708608627319336
         },
         "status": 1,
         "url": "/",
         "locked": 0,
-        "datetime": "2022-05-16T02:13:03.128031"
+        "datetime": "2022-05-19T09:21:46.435Z"
     },
     {
         "id": 87,
@@ -3297,13 +3297,13 @@
         "type": "Betona stēla ar balta marmora plāksni ar vārdiem",
         "date2": "1966. g.",
         "position": {
-            "lat": 56.8964499,
-            "lng": 26.7279674
+            "lat": 56.94755116995549,
+            "lng": 26.565713882446293
         },
         "status": 1,
         "url": "/",
         "locked": 0,
-        "datetime": "2022-05-16T02:13:03.128031"
+        "datetime": "2022-05-19T09:20:38.170Z"
     },
     {
         "id": 175,
@@ -3316,13 +3316,13 @@
         "type": "Betona stēla ar balta marmora plāksni ar vārdiem",
         "date2": "1992.07.25.",
         "position": {
-            "lat": 56.8964499,
-            "lng": 26.7279674
+            "lat": 56.93106809627195,
+            "lng": 26.634850502014164
         },
         "status": 1,
         "url": "/",
         "locked": 0,
-        "datetime": "2022-05-16T02:13:03.128031"
+        "datetime": "2022-05-19T09:20:47.483Z"
     },
     {
         "id": 176,
@@ -3335,13 +3335,13 @@
         "type": "",
         "date2": "",
         "position": {
-            "lat": 56.8964499,
-            "lng": 26.7279674
+            "lat": 56.92643217108922,
+            "lng": 26.64570808410645
         },
         "status": 1,
         "url": "/",
         "locked": 0,
-        "datetime": "2022-05-16T02:13:03.128031"
+        "datetime": "2022-05-19T09:20:58.822Z"
     },
     {
         "id": 177,
@@ -3354,13 +3354,13 @@
         "type": "",
         "date2": "",
         "position": {
-            "lat": 56.8964499,
-            "lng": 26.7279674
+            "lat": 56.92643208279682,
+            "lng": 26.639099121093754
         },
         "status": 1,
         "url": "/",
         "locked": 0,
-        "datetime": "2022-05-16T02:13:03.128031"
+        "datetime": "2022-05-19T09:20:59.522Z"
     },
     {
         "id": 178,
@@ -3373,13 +3373,13 @@
         "type": "Laukakmens ar iekaltu tekstu",
         "date2": "1970. g. (tēlniece B. Grīsle)",
         "position": {
-            "lat": 56.8958269,
-            "lng": 26.7198094
+            "lat": 56.90010163372368,
+            "lng": 26.71480178833008
         },
         "status": 1,
         "url": "/",
         "locked": 0,
-        "datetime": "2022-05-16T02:13:03.128031"
+        "datetime": "2022-05-19T09:19:48.470Z"
     },
     {
         "id": 179,
@@ -3392,13 +3392,13 @@
         "type": "Piemineklis",
         "date2": "1988.09.01.",
         "position": {
-            "lat": 56.8958269,
-            "lng": 26.7198094
+            "lat": 56.900078175537764,
+            "lng": 26.711711883544925
         },
         "status": 1,
         "url": "/",
         "locked": 0,
-        "datetime": "2022-05-16T02:13:03.128031"
+        "datetime": "2022-05-19T09:19:59.139Z"
     },
     {
         "id": 180,
@@ -3658,13 +3658,13 @@
         "type": "Ķieģeļu mūra stēla ar balta marmora plāksni",
         "date2": "20. gs. 60. g.",
         "position": {
-            "lat": 56.689972,
-            "lng": 26.1456301
+            "lat": 56.669082252332025,
+            "lng": 26.10639095306397
         },
         "status": 1,
         "url": "/",
         "locked": 0,
-        "datetime": "2022-05-16T02:13:03.128031"
+        "datetime": "2022-05-19T09:22:49.095Z"
     },
     {
         "id": 194,
@@ -3677,13 +3677,13 @@
         "type": "dolomīta mūra siena ar melna granīta piemiņas plāksni",
         "date2": "20. gs. 70. g.",
         "position": {
-            "lat": 56.8534363,
-            "lng": 26.2250202
+            "lat": 56.85110533247994,
+            "lng": 26.228013038635257
         },
         "status": 1,
         "url": "/",
         "locked": 0,
-        "datetime": "2022-05-16T02:13:03.128031"
+        "datetime": "2022-05-19T09:26:41.211Z"
     },
     {
         "id": 195,
@@ -4595,7 +4595,7 @@
         "status": 1,
         "url": "/",
         "locked": 0,
-        "datetime": "2022-05-16T02:13:03.128031"
+        "datetime": "2022-05-19T09:14:40.219Z"
     },
     {
         "id": 243,
