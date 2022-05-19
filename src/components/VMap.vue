@@ -23,6 +23,7 @@
                     :icon="myIcn[marker.status]"
                     ref="marker"
                     @dragend="marker.datetime=dateNow()"
+                    @popupopen="popupFix"
                 >
                     <l-popup class="popup-wrap">
                         <div class="image" :style="{ backgroundImage: 'url(images/gallery/' + marker.id + '.jpg)' }"></div>
@@ -105,7 +106,7 @@ const tileProviders = [
         visible: true,
         attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OSM</a>',
         url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        detectRetina: true,
+        // detectRetina: true,
         //  :tileSize="512"
         //  :options="{ zoomOffset:-1 }"
     },
@@ -141,14 +142,6 @@ export default {
             markers: this.md,
         };
     },
-    mounted(){
-        //remove popup href
-        // document.querySelector('.leaflet-pane.leaflet-popup-pane').addEventListener('click', event => {
-        //     event.preventDefault();
-        // });
-
-        // document.querySelector('.leaflet-popup-close-button').removeAttribute("href");
-    },
     methods: {
         dateNow(){
             return new Date().toJSON()
@@ -172,7 +165,6 @@ export default {
         //   .setLatLng(item.position)
         //   .setContent(cont)
         //   .openOn(map)
-
         },
         addMarker() {
             function rndNumber(min, max) {
@@ -202,18 +194,12 @@ export default {
                 setTimeout(function () {
                     xx.openPopup();
                 }, 700);
-
-                // remove close href
-                setTimeout(function () {
-                    const highlightedItems = document.querySelectorAll(".leaflet-popup-close-button");
-                    highlightedItems.forEach(function(u) {
-                        u.removeAttribute("href")
-                        u.style.cursor = "pointer";
-                    })
-                }, 800);
-        
             });
         },
+        popupFix(){
+            // remove close href
+            document.querySelector(".leaflet-popup-close-button").removeAttribute("href")
+        }
     },
 };
 </script>
@@ -227,38 +213,51 @@ export default {
 #map {
     height: 100%;
 }
+
 #map {
     width: 100%;
 }
+
 #map .leaflet-popup-content {
     max-width: 260px;
 }
+
 #map hr {
     border: 0;
     height: 1px;
     background-color: rgb(237, 237, 237);
     margin: 6px 0 14px;
 }
+
 #map .leaflet-popup-content {
     margin: 14px 14px 14px 14px;
 }
+
+.leaflet-popup-close-button{
+    cursor: pointer;
+}
+
 .popup-wrap{
     display: flex;
     flex-wrap: wrap;
 }
+
 .popup-wrap .image{
     width: 70px;
     height: 70px;
     background-size: cover;
     background-color: #f0eef1;
 }
+
 .popup-wrap .content{
     width: calc(100% - 80px);
     margin-left: 10px;
 }
+
 .popup-wrap .manage{
     width:100%;
 }
+
 .popup-wrap .manage > div{
     display: flex;
     justify-content: space-between;
@@ -266,20 +265,23 @@ export default {
 }
 
 .popup-wrap .manage label{
-vertical-align: bottom;
-cursor: pointer;
+    vertical-align: bottom;
+    cursor: pointer;
 }
+
 .popup-wrap .manage input{
-vertical-align: middle;
+    vertical-align: middle;
 }
-.popup-wrap .manage select{
-/* font-size: 12px; */
-}
+
+/* .popup-wrap .manage select{
+    font-size: 12px;
+} */
 
 @media (min-width: 600px) {
     #map {
         height: 50%;
     }
+
     #map .leaflet-popup-content {
         max-width: 320px;
     }
