@@ -20,7 +20,7 @@ yarn build
 yarn lint
 ```
 
-### Deployemnt of /dist folder to gh-pages
+### Deployment of /dist folder to gh-pages
 ```
 yarn deploy
 ```

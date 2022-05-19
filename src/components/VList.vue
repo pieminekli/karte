@@ -48,7 +48,7 @@
 
 <script>
 export default {
-    name: "data-list",
+    name: "VList",
     components: {},
     props: { md: Array },
     data() {

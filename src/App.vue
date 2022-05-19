@@ -5,10 +5,10 @@
         <VModal v-if="showModal" @close="showModal = false">
             <h3 slot="header">Informācija</h3>
             <template #body>
-                <p>Karte ir izstrādes stadijā! Lielākajai daļai marķieru atrašanās vieta ir aptuvena. </p>
-                <p>Precizē marķieru atrašanās vietu zināmajiem pieminekļiem. </p>
-                <p>Lejuplādē laboto *.csv failu un sūti uz <a href="mailto:pieminekli@protonmail.com?subject=Kartes labojumi">pieminekli@protonmail.com</a> </p>
-                <p>Vai arī veic labojumus <a href="https://github.com/pieminekli/karte" target="_blank">github</a> </p>
+                <p>Karte ir izstrādes stadijā!</p> 
+                <p>Lielākajai daļai marķieru koordinātas ir aptuvenas. Precizē sev zināmajiem pieminekļiem atrašanās vietu, ieslēdzot labošanas režīmu un pārvietojot marķierus.</p>
+                <p>Lejuplādē *.csv failu ar izmaiņām un sūti uz <a href="mailto:pieminekli@protonmail.com?subject=Kartes labojumi">pieminekli@protonmail.com</a>, pievieno trūkstošos attēlus, norādot pieminekļa id.</p>
+                <p>Vai arī veic labojumus <a href="https://github.com/pieminekli/karte" target="_blank">github</a> patstāvīgi.</p>
             </template>
         </VModal>
     </div>
@@ -38,7 +38,6 @@ export default {
     },
     methods: {
         updateData(n) {
-            // console.log(n[92])
             // this.md = n;
         },
     },

@@ -12,6 +12,7 @@
                 layer-type="base"
                 :detectRetina="tileProvider.detectRetina"
                 :options="{ minZoom: 1, maxZoom: 20, maxNativeZoom: 18 }"
+                :subdomains="tileProvider.subdomains"
             />
             <l-control-scale :imperial="false" :position="'bottomleft'" />
             <v-marker-cluster :options="clusterOptions">
@@ -20,7 +21,7 @@
                     :key="marker.id"
                     :draggable="marker.draggable"
                     :latLng.sync="marker.position"
-                    :icon="myIcn[marker.status]"
+                    :icon="myIcn[+marker.draggable][marker.status]"
                     ref="marker"
                     @dragend="marker.datetime=dateNow()"
                     @popupopen="popupFix"
@@ -41,13 +42,13 @@
                                 <div>
                                    Statuss:
                                     <select v-model="marker.status" @change="marker.datetime=dateNow()">
-                                        <option value=1>Dabā eksistē</option>
-                                        <option value=2>Notiek diskusijas</option>
+                                        <option value=1>Saglabājies</option>
+                                        <option value=2>Tiek diskutēts</option>
                                         <option value=0>Nojaukts</option>
                                     </select>
                                 </div>
                                 <!-- <div>Slēgts: {{ marker.locked }}</div> -->
-                                <div>Id: {{ marker.id }}</div>
+                                <div>id: {{ marker.id }}</div>
                             </div>
                         </div>
                     </l-popup>
@@ -62,7 +63,7 @@
 import "leaflet/dist/leaflet.css";
 import { LMap, LTileLayer, LMarker, LPopup, LControlScale, LControlLayers } from "vue2-leaflet";
 import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
-// import L from "leaflet";
+
 import { Icon } from "leaflet";
 import VList from './VList.vue'
 
@@ -90,13 +91,26 @@ const redIcon = new baseIcon({
     iconRetinaUrl: "images/leaflet/marker-red.png",
 });
 
-const icons = [greyIcon, blueIcon, redIcon];
+const greyIconEdit = new baseIcon({
+    iconUrl: "images/leaflet/marker-grey-edit.png",
+    iconRetinaUrl: "images/leaflet/marker-grey-edit.png",
+});
+const blueIconEdit = new baseIcon({
+    iconUrl: "images/leaflet/marker-blue-edit.png",
+    iconRetinaUrl: "images/leaflet/marker-blue-edit.png",
+});
+const redIconEdit = new baseIcon({
+    iconUrl: "images/leaflet/marker-red-edit.png",
+    iconRetinaUrl: "images/leaflet/marker-red-edit.png",
+});
+
+const icons = [[greyIcon, blueIcon, redIcon], [greyIconEdit, blueIconEdit, redIconEdit]];
 
 const clusterOptions = {
     chunkedLoading: true,
     spiderfyOnMaxZoom: false,
     showCoverageOnHover: false,
-    maxClusterRadius: "60",
+    maxClusterRadius: "70",
     disableClusteringAtZoom: "11",
 };
 
@@ -106,20 +120,27 @@ const tileProviders = [
         visible: true,
         attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OSM</a>',
         url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        // detectRetina: true,
+        //  detectRetina: true,
         //  :tileSize="512"
         //  :options="{ zoomOffset:-1 }"
     },
     {
         name: "Esri",
         visible: false,
-        url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
         attribution: "Tiles &copy; Esri",
+        url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
     },
+    {
+        name: "J.Sēta",
+        visible: false,
+        attribution: '<a href="https://www.kartes.lv/en" target="_blank">Jāņa Sēta</a>',
+        subdomains: ["wms", "wms1", "wms2", "wms3", "wms4"],
+        url: "https://{s}.kartes.lv/LAUC/wgs/15/{z}/{x}/{y}.png"
+    }
 ];
 
 export default {
-    name: "vue-map",
+    name: "VMap",
     components: {
         LMap,
         LTileLayer,
@@ -143,28 +164,17 @@ export default {
         };
     },
     methods: {
-        dateNow(){
-            return new Date().toJSON()
-        },
-        alert(item) {
-        //   alert('this is ' + JSON.stringify(item));
-        // this.$refs.myMap.mapObject.setView(item.position);
-        // var rect = item.getBoundingClientRect();
+        // alert(item) {
+            // alert('this is ' + JSON.stringify(item));
+            // this.$refs.myMap.mapObject.setView(item.position);
+            // var rect = item.getBoundingClientRect();
             // console.log(rect.top, rect.right, rect.bottom, rect.left);
             // console.log(this.$refs.marker[item.id]);
             // console.log(this.$refs.myMap.mapObject.project(item.position, this.zoom))
             // console.log(this.$refs.marker[item.id])
-
-        // const cont =        'Nr: '+item.id +'<br />'+
-        //                     item.region+ ', ' +item.parish+ ', ' +item.location+'<br />'+
-        //                     item.name+ ', ' +item.date1 +'<br />'+
-        //                     '<hr />'
-
-        // const map = this.$refs.myMap.mapObject;
-        // var popup = new L.popup()
-        //   .setLatLng(item.position)
-        //   .setContent(cont)
-        //   .openOn(map)
+        // },
+        dateNow(){
+            return new Date().toJSON()
         },
         addMarker() {
             function rndNumber(min, max) {
@@ -178,7 +188,7 @@ export default {
                 id: this.markers.length + 1,
                 position: pos,
                 draggable: true,
-                status: 2, //set icon
+                status: 2,
             };
             this.markers.push(newMarker);
             this.$refs.myMap.mapObject.setView(pos, 11);
@@ -256,6 +266,7 @@ export default {
 
 .popup-wrap .manage{
     width:100%;
+    line-height: 1.5;
 }
 
 .popup-wrap .manage > div{
@@ -265,17 +276,17 @@ export default {
 }
 
 .popup-wrap .manage label{
-    vertical-align: bottom;
     cursor: pointer;
 }
 
 .popup-wrap .manage input{
-    vertical-align: middle;
+    vertical-align: bottom;
 }
 
-/* .popup-wrap .manage select{
+.popup-wrap,
+.popup-wrap .manage select{
     font-size: 12px;
-} */
+}
 
 @media (min-width: 600px) {
     #map {

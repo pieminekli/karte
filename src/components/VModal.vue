@@ -26,7 +26,7 @@
 
 <script>
 export default {
-    name: "modal-window",
+    name: "VModal",
     components: {},
     props: {},
     data() {
@@ -36,7 +36,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .modal-mask {
     position: fixed;
     z-index: 9998;
@@ -66,9 +66,19 @@ export default {
     transition: all 0.3s ease;
 }
 
+.modal-body a:link,
+.modal-body a:visited,
+.modal-body a:active,
+.modal-body a:hover {
+  color: #1b41da;
+}
+
+.modal-body a {
+    text-decoration: none;
+}
+
 .modal-header h3 {
     margin-top: 0;
-    color: #42b983;
 }
 
 .modal-body {
@@ -88,7 +98,7 @@ export default {
 
 @media (min-width: 600px) {
     .modal-container {
-        width: 340px;
+        width: 460px;
     }
 }
 

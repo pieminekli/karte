@@ -4,7 +4,7 @@
 
 <script>
 export default {
-    name: "csv-generator",
+    name: "VCsv",
     components: {},
     props: { md: Array },
     data() {
@@ -60,7 +60,6 @@ export default {
                     m.datetime
                 ].join()
                 csvRows += row + "\r\n";
-                // console.log(m)
             }
             // console.log(csvRows)
 
@@ -69,7 +68,6 @@ export default {
             });
 
             window.URL = window.URL || window.webkitURL;
-
             this.filename = "pieminekli.csv";
             this.fileurl = window.URL.createObjectURL(csvFile);
         },
@@ -80,10 +78,10 @@ export default {
 <style scoped>
 a {
     position: absolute;
-    top: 68px;
+    top: 90px;
     right: 0;
     z-index: 1001;
-    margin: 10px;
+    margin: 12px;
     background: rgba(255, 255, 255, 1);
     color: black;
     font-size: 12px;
