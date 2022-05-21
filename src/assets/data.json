@@ -1340,8 +1340,8 @@
         "type": "Lidmašīnas spārna fragments (1968. g.), piemiņas akmens ar 4 vārdiem (1980. g.)",
         "date2": "1980. g.",
         "position": {
-            "lat": 55.926509338246106,
-            "lng": 26.780462265014652
+            "lat": 55.93053948891598,
+            "lng": 26.724296808242798
         },
         "status": 1,
         "url": "/",
@@ -1359,8 +1359,8 @@
         "type": "Lidmašīnas spārna fragments ar 13 keramikas foto",
         "date2": "1973. g.",
         "position": {
-            "lat": 55.930827924041914,
-            "lng": 26.715772747993473
+            "lat": 55.935984063286455,
+            "lng": 26.754434108734134
         },
         "status": 1,
         "url": "/",
@@ -1378,8 +1378,8 @@
         "type": "Nerūsējoša tērauda plāksne uz betona divpakāpju pamatnes",
         "date2": "20. gs. 70. g.",
         "position": {
-            "lat": 55.930915072175935,
-            "lng": 26.714426279067997
+            "lat": 55.93629999849627,
+            "lng": 26.753849387168888
         },
         "status": 1,
         "url": "/",
@@ -5577,13 +5577,13 @@
         "type": "Piemiņas akmens ar piemiņas plāksni",
         "date2": "1975. g.",
         "position": {
-            "lat": 56.37964055657919,
-            "lng": 24.645112752914432
+            "lat": 56.33464500398147,
+            "lng": 24.59000945091248
         },
         "status": 1,
         "url": "/",
         "locked": 0,
-        "datetime": "2022-05-16T02:13:03.128031"
+        "datetime": "2022-05-21T20:35:55.067Z"
     },
     {
         "id": 295,

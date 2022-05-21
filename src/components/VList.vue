@@ -10,12 +10,13 @@
                     <th>description</th>
                     <th>date</th>
                     <th>type</th>
+                    <!-- <th>army</th> -->
                     <th>lat</th>
                     <th>lng</th>
                     <th>move</th>
                     <!-- <th>Remove</th> -->
                 </tr>
-                <tr v-for="item in md" :key="item.id" @click="rowClick(item.id)">
+                <tr v-for="item in md" v-show="item.visible" :key="item.id" @click="rowClick(item)">
                     <td>{{ item.id }}</td>
                     <td>{{ item.region }}</td>
                     <td>{{ [item.parish, item.location].filter(Boolean).join(', ') }}</td>
@@ -23,6 +24,7 @@
                     <td>{{ item.description }}</td>
                     <td>{{ item.date1 }}</td>
                     <td style="width: 180px">{{ item.type }}</td>
+                    <!-- <td>{{ item.army }}</td> -->
                     <!-- <td>
                         <input v-model="item.name" type="text" />
                     </td>
@@ -53,9 +55,14 @@ export default {
     props: { md: Array },
     data() {
         return {
-            // markers: this.md,
+            // markers_all: this.md.concat(this.md2),
         };
     },
+    // computed: {
+    //     mdFiltered() {
+    //         return this.md.filter( obj => obj.visible === true )
+    //     }
+    // },
     methods: {
         rowClick(n){
             this.$parent.centerPopup(n);

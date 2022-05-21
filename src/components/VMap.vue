@@ -14,54 +14,87 @@
                 :options="{ minZoom: 1, maxZoom: 20, maxNativeZoom: 18 }"
                 :subdomains="tileProvider.subdomains"
             />
+            <l-wms-tile-layer
+                v-for="wmsLayer in wmsLayers"
+                :key="wmsLayer.name"
+                :base-url="wmsLayer.url"
+                :layers="wmsLayer.layers"
+                :visible="wmsLayer.visible"
+                :name="wmsLayer.name"
+                :attribution="wmsLayer.attribution"
+                :transparent="true"
+                format="image/png"
+                layer-type="base"
+                :options="{ minZoom: 1, maxZoom: 20, maxNativeZoom: 18 }"
+            />
+
             <l-control-scale :imperial="false" :position="'bottomleft'" />
-            <v-marker-cluster :options="clusterOptions">
-                <l-marker
-                    v-for="marker in markers"
-                    :key="marker.id"
-                    :draggable="marker.draggable"
-                    :latLng.sync="marker.position"
-                    :icon="myIcn[+marker.draggable][marker.status]"
-                    ref="marker"
-                    @dragend="marker.datetime=dateNow()"
-                    @popupopen="popupFix"
-                >
-                    <l-popup class="popup-wrap">
-                        <div class="image" :style="{ backgroundImage: 'url(images/gallery/' + marker.id + '.jpg)' }"></div>
+
+            <l-layer-group ref="features">
+                  <l-popup class="popup-wrap" :options="{offset:[1, -30]}">
+                        <div class="image" :style="{ backgroundImage: 'url(images/gallery/' + caller.id + '.jpg)' }"></div>
                         <div class="content">
-                            {{ [marker.region, marker.parish, marker.location].filter(Boolean).join(', ') }}<br />
-                            {{ [marker.name, marker.type, marker.date1].filter(Boolean).join(', ') }}<br />
+                            {{ [caller.region, caller.parish, caller.location].filter(Boolean).join(', ') }}<br />
+                            {{ [caller.name, caller.type, caller.date1].filter(Boolean).join(', ') }}<br />
                         </div>
                         <div class="manage">
                             <hr />
                             <div>
                                 <div>
-                                <input v-model="marker.draggable" type="checkbox" :id="'cb' + marker.id" />
-                                <label :for="'cb' + marker.id">Labot</label>
+                                    <input v-model="caller.draggable" type="checkbox" :id="'cb' + caller.id" />
+                                    <label :for="'cb' + caller.id">Labot</label>
                                 </div>
                                 <div>
                                    Statuss:
-                                    <select v-model="marker.status" @change="marker.datetime=dateNow()">
+                                    <select v-model="caller.status" @change="caller.datetime=dateNow()">
                                         <option value=1>Saglabājies</option>
-                                        <option value=2>Tiek diskutēts</option>
+                                        <option value=3>Tiek diskutēts</option>
+                                        <option value=4>Pārvietots</option>
                                         <option value=0>Nojaukts</option>
                                     </select>
                                 </div>
-                                <!-- <div>Slēgts: {{ marker.locked }}</div> -->
-                                <div>id: {{ marker.id }}</div>
+                                <div>id: {{ caller.id }}</div>
                             </div>
                         </div>
                     </l-popup>
+            </l-layer-group>
+
+             <l-layer-group
+                layer-type="overlay"
+                name="Bez apbed."
+                :visible.sync="vis1"
+            ></l-layer-group>
+            
+            <l-layer-group
+                layer-type="overlay"
+                name="Ar apbed."
+                :visible.sync="vis2"
+            ></l-layer-group>
+
+            <v-marker-cluster :options="clusterOptions">
+                <l-marker
+                    v-for="marker in mdFiltered"
+                    :key="marker.id"
+                    :visible="marker.visible"
+                    :draggable="marker.draggable"
+                    :latLng.sync="marker.position"
+                    :icon="myIcn[+marker.draggable][marker.status]"
+                    ref="marker"
+                    @dragstart="closeMyPopup"
+                    @dragend="marker.datetime=dateNow()"
+                    @click="openMyPopup(marker)"
+                >
                 </l-marker>
             </v-marker-cluster>
+
         </l-map>
-        <VList :md="markers" />
+        <VList :md="mdFiltered" />
     </div>
 </template>
 
 <script>
 import "leaflet/dist/leaflet.css";
-import { LMap, LTileLayer, LMarker, LPopup, LControlScale, LControlLayers } from "vue2-leaflet";
+import { LMap, LTileLayer, LMarker, LLayerGroup, LPopup, LControlScale, LControlLayers, LWMSTileLayer } from "vue2-leaflet";
 import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
 
 import { Icon } from "leaflet";
@@ -86,6 +119,10 @@ const blueIcon = new baseIcon({
     iconUrl: "images/leaflet/marker-blue.png",
     iconRetinaUrl: "images/leaflet/marker-blue.png",
 });
+const blue2Icon = new baseIcon({
+    iconUrl: "images/leaflet/marker-blue2.png",
+    iconRetinaUrl: "images/leaflet/marker-blue2.png",
+});
 const redIcon = new baseIcon({
     iconUrl: "images/leaflet/marker-red.png",
     iconRetinaUrl: "images/leaflet/marker-red.png",
@@ -99,12 +136,16 @@ const blueIconEdit = new baseIcon({
     iconUrl: "images/leaflet/marker-blue-edit.png",
     iconRetinaUrl: "images/leaflet/marker-blue-edit.png",
 });
+const blue2IconEdit = new baseIcon({
+    iconUrl: "images/leaflet/marker-blue2-edit.png",
+    iconRetinaUrl: "images/leaflet/marker-blue2-edit.png",
+});
 const redIconEdit = new baseIcon({
     iconUrl: "images/leaflet/marker-red-edit.png",
     iconRetinaUrl: "images/leaflet/marker-red-edit.png",
 });
 
-const icons = [[greyIcon, blueIcon, redIcon], [greyIconEdit, blueIconEdit, redIconEdit]];
+const icons = [[greyIcon, blueIcon, blue2Icon, redIcon], [greyIconEdit, blueIconEdit, blue2IconEdit, redIconEdit]];
 
 const clusterOptions = {
     chunkedLoading: true,
@@ -120,9 +161,6 @@ const tileProviders = [
         visible: true,
         attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OSM</a>',
         url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        //  detectRetina: true,
-        //  :tileSize="512"
-        //  :options="{ zoomOffset:-1 }"
     },
     {
         name: "Esri",
@@ -136,8 +174,32 @@ const tileProviders = [
         attribution: '<a href="https://www.kartes.lv/en" target="_blank">Jāņa Sēta</a>',
         subdomains: ["wms", "wms1", "wms2", "wms3", "wms4"],
         url: "https://{s}.kartes.lv/LAUC/wgs/15/{z}/{x}/{y}.png"
-    }
-];
+    },
+]
+
+const wmsLayers = [
+    {
+        name: "Orto LKS",
+        visible: false,
+        attribution: '<a href="" target="_blank">LVM</a>',
+        layers: 'public:Orto_LKS',
+        url: " https://lvmgeoserver.lvm.lv/geoserver/ows?"
+    },
+    {
+        name: "Topo10",
+        visible: false,
+        attribution: '<a href="" target="_blank">LVM</a>',
+        layers: 'public:Topo10_contours',
+        url: " https://lvmgeoserver.lvm.lv/geoserver/ows?"
+    },
+    {
+        name: "Topo75 LKS",
+        visible: false,
+        attribution: '<a href="" target="_blank">LVM</a>',
+        layers: 'public:Topo75LKS',
+        url: " https://lvmgeoserver.lvm.lv/geoserver/ows?"
+    },         
+]
 
 export default {
     name: "VMap",
@@ -145,33 +207,47 @@ export default {
         LMap,
         LTileLayer,
         LMarker,
+        LLayerGroup,
         LPopup,
         LControlScale,
         LControlLayers,
         "v-marker-cluster": Vue2LeafletMarkerCluster,
         VList,
+        "l-wms-tile-layer": LWMSTileLayer
     },
     props: { md: Array },
     data() {
         return {
+            vis1: true,
+            vis2: true,
+            caller: {},
             myIcn: icons,
             isActive: false,
             clusterOptions: clusterOptions,
             center: [56.74, 24.12],
             zoom: 7,
             tileProviders: tileProviders,
+            wmsLayers: wmsLayers,
             markers: this.md,
         };
     },
+    computed: {
+        mdFiltered() {
+            return this.md.map(item => {
+                if(item.burial === 0){
+                    item.visible = this.vis1
+                }
+                if(item.burial === 1){
+                    item.visible = this.vis2
+                }
+                return item
+            })
+        }
+    },
     methods: {
-        // alert(item) {
-            // alert('this is ' + JSON.stringify(item));
-            // this.$refs.myMap.mapObject.setView(item.position);
-            // var rect = item.getBoundingClientRect();
-            // console.log(rect.top, rect.right, rect.bottom, rect.left);
-            // console.log(this.$refs.marker[item.id]);
-            // console.log(this.$refs.myMap.mapObject.project(item.position, this.zoom))
-            // console.log(this.$refs.marker[item.id])
+        // alert2(v){
+            // this.markers2.map((obj) => ({ ...obj, visible: true }))
+            // console.log(v)
         // },
         dateNow(){
             return new Date().toJSON()
@@ -197,16 +273,19 @@ export default {
             this.markers.splice(index, 1);
         },
         centerPopup(n) {
-            let selMark = this.markers[n - 1];
+            this.closeMyPopup()
             this.$nextTick(() => {
-                this.$refs.myMap.mapObject.setView(selMark.position, 13);
-                let xx = this.$refs.marker[n - 1].mapObject;
-                setTimeout(function () {
-                    xx.openPopup();
-                }, 700);
+                this.$refs.myMap.mapObject.setView(n.position, 13);
+                setTimeout(() => { this.openMyPopup(n) }, 700)
             });
+            
         },
-        popupFix(){
+        closeMyPopup(){
+            this.$refs.features.mapObject.closePopup()
+        },
+        openMyPopup(n) {
+            this.caller = n;
+            this.$refs.features.mapObject.openPopup(n.position);
             // remove close href
             document.querySelector(".leaflet-popup-close-button").removeAttribute("href")
         }
@@ -229,7 +308,7 @@ export default {
 }
 
 #map .leaflet-popup-content {
-    max-width: 260px;
+    width: 260px;
 }
 
 #map hr {
@@ -294,7 +373,7 @@ export default {
     }
 
     #map .leaflet-popup-content {
-        max-width: 320px;
+        width: 320px;
     }
 }
 

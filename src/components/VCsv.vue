@@ -78,8 +78,8 @@ export default {
 <style scoped>
 a {
     position: absolute;
-    top: 90px;
-    right: 0;
+    top: 0;
+    right: 140px;
     z-index: 1001;
     margin: 12px;
     background: rgba(255, 255, 255, 1);
