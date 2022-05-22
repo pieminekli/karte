@@ -18,7 +18,7 @@
 import VMap from "./components/VMap.vue";
 import VCsv from "./components/VCsv.vue";
 import VModal from "./components/VModal.vue";
-import data1 from "./assets/data.json";
+import data1 from "./assets/data1.json";
 import data2 from "./assets/data2.json";
 
 // add drag property to array
@@ -37,7 +37,6 @@ export default {
     data() {
         return {
             md: merged,
-            // md2: data2_drag,
             showModal: true
         };
     },

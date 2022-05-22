@@ -35,21 +35,20 @@
                         <div class="image" :style="{ backgroundImage: 'url(images/gallery/' + caller.id + '.jpg)' }"></div>
                         <div class="content">
                             {{ [caller.region, caller.parish, caller.location].filter(Boolean).join(', ') }}<br />
-                            {{ [caller.name, caller.type, caller.date1].filter(Boolean).join(', ') }}<br />
+                            {{ [caller.title, caller.type, caller.date].filter(Boolean).join(', ') }}<br />
                         </div>
                         <div class="manage">
                             <hr />
                             <div>
                                 <div>
-                                    <input v-model="caller.draggable" type="checkbox" :id="'cb' + caller.id" />
+                                    <input type="checkbox" v-model="caller.draggable" :id="'cb' + caller.id" />
                                     <label :for="'cb' + caller.id">Labot</label>
                                 </div>
                                 <div>
-                                   Statuss:
                                     <select v-model="caller.status" @change="caller.datetime=dateNow()">
                                         <option value=1>Saglabājies</option>
-                                        <option value=3>Tiek diskutēts</option>
-                                        <option value=4>Pārvietots</option>
+                                        <option value=2>Tiek diskutēts</option>
+                                        <option value=3>Pārvietots</option>
                                         <option value=0>Nojaukts</option>
                                     </select>
                                 </div>
@@ -78,7 +77,7 @@
                     :visible="marker.visible"
                     :draggable="marker.draggable"
                     :latLng.sync="marker.position"
-                    :icon="myIcn[+marker.draggable][marker.status]"
+                    :icon="myIcn[+marker.draggable][marker.status][+marker.burial]"
                     ref="marker"
                     @dragstart="closeMyPopup"
                     @dragend="marker.datetime=dateNow()"
@@ -145,7 +144,10 @@ const redIconEdit = new baseIcon({
     iconRetinaUrl: "images/leaflet/marker-red-edit.png",
 });
 
-const icons = [[greyIcon, blueIcon, blue2Icon, redIcon], [greyIconEdit, blueIconEdit, blue2IconEdit, redIconEdit]];
+const icons = [
+    [[greyIcon, greyIcon], [blueIcon, blue2Icon], [redIcon, redIcon], [blueIcon, blue2Icon]],
+    [[greyIconEdit, greyIconEdit], [blueIconEdit, blue2IconEdit], [redIconEdit, redIconEdit], [blueIconEdit, blue2IconEdit]]
+];
 
 const clusterOptions = {
     chunkedLoading: true,
@@ -162,12 +164,12 @@ const tileProviders = [
         attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OSM</a>',
         url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     },
-    {
-        name: "Esri",
-        visible: false,
-        attribution: "Tiles &copy; Esri",
-        url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-    },
+    // {
+    //     name: "Esri",
+    //     visible: false,
+    //     attribution: "Tiles &copy; Esri",
+    //     url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    // },
     {
         name: "J.Sēta",
         visible: false,
@@ -183,21 +185,21 @@ const wmsLayers = [
         visible: false,
         attribution: '<a href="" target="_blank">LVM</a>',
         layers: 'public:Orto_LKS',
-        url: " https://lvmgeoserver.lvm.lv/geoserver/ows?"
+        url: "https://lvmgeoserver.lvm.lv/geoserver/ows?"
     },
     {
         name: "Topo10",
         visible: false,
         attribution: '<a href="" target="_blank">LVM</a>',
         layers: 'public:Topo10_contours',
-        url: " https://lvmgeoserver.lvm.lv/geoserver/ows?"
+        url: "https://lvmgeoserver.lvm.lv/geoserver/ows?"
     },
     {
-        name: "Topo75 LKS",
+        name: "PSRS",
         visible: false,
-        attribution: '<a href="" target="_blank">LVM</a>',
-        layers: 'public:Topo75LKS',
-        url: " https://lvmgeoserver.lvm.lv/geoserver/ows?"
+        attribution: '<a href="" target="_blank">GISnet</a>',
+        layers: 'DT_KOPA',
+        url: "https://www.gisnet.lv/cgi-bin/topo_all?"
     },         
 ]
 
@@ -220,7 +222,7 @@ export default {
         return {
             vis1: true,
             vis2: true,
-            caller: {},
+            caller: {id:null},
             myIcn: icons,
             isActive: false,
             clusterOptions: clusterOptions,
@@ -245,34 +247,10 @@ export default {
         }
     },
     methods: {
-        // alert2(v){
-            // this.markers2.map((obj) => ({ ...obj, visible: true }))
-            // console.log(v)
-        // },
         dateNow(){
             return new Date().toJSON()
         },
-        addMarker() {
-            function rndNumber(min, max) {
-                return Math.random() * (max - min) + min;
-            }
-            const pos = {
-                lat: 57.11835 + rndNumber(-0.05, 0.05),
-                lng: 23.66455 + rndNumber(-0.05, 0.05),
-            };
-            const newMarker = {
-                id: this.markers.length + 1,
-                position: pos,
-                draggable: true,
-                status: 2,
-            };
-            this.markers.push(newMarker);
-            this.$refs.myMap.mapObject.setView(pos, 11);
-        },
-        removeMarker(index) {
-            this.markers.splice(index, 1);
-        },
-        centerPopup(n) {
+        centerMyPopup(n) {
             this.closeMyPopup()
             this.$nextTick(() => {
                 this.$refs.myMap.mapObject.setView(n.position, 13);
@@ -288,7 +266,31 @@ export default {
             this.$refs.features.mapObject.openPopup(n.position);
             // remove close href
             document.querySelector(".leaflet-popup-close-button").removeAttribute("href")
-        }
+        },
+        // alert2(v){
+        // this.markers2.map((obj) => ({ ...obj, visible: true }))
+        // console.log(v)
+        // },
+        // addMarker() {
+        //     function rndNumber(min, max) {
+        //         return Math.random() * (max - min) + min;
+        //     }
+        //     const pos = {
+        //         lat: 57.11835 + rndNumber(-0.05, 0.05),
+        //         lng: 23.66455 + rndNumber(-0.05, 0.05),
+        //     };
+        //     const newMarker = {
+        //         id: this.markers.length + 1,
+        //         position: pos,
+        //         draggable: true,
+        //         status: 2,
+        //     };
+        //     this.markers.push(newMarker);
+        //     this.$refs.myMap.mapObject.setView(pos, 11);
+        // },
+        // removeMarker(index) {
+        //     this.markers.splice(index, 1);
+        // },
     },
 };
 </script>
@@ -321,6 +323,10 @@ export default {
 #map .leaflet-popup-content {
     margin: 14px 14px 14px 14px;
 }
+
+/* .leaflet-marker-draggable{
+    filter: hue-rotate(180deg);
+} */
 
 .leaflet-popup-close-button{
     cursor: pointer;

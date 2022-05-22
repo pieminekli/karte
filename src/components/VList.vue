@@ -4,35 +4,28 @@
             <table>
                 <tr>
                     <th>id</th>
-                    <th>region</th>
-                    <th>location</th>
-                    <th>name</th>
-                    <th>description</th>
-                    <th>date</th>
-                    <th>type</th>
-                    <!-- <th>army</th> -->
-                    <th>lat</th>
-                    <th>lng</th>
-                    <th>move</th>
+                    <th>Reģions</th>
+                    <th>Atrašanās vieta</th>
+                    <th>Nosaukums</th>
+                    <th>Apraksts</th>
+                    <th>Datējums</th>
+                    <th>Veids</th>
+                    <th>Koordinātes</th>
+                    <th>Labot</th>
                     <!-- <th>Remove</th> -->
                 </tr>
                 <tr v-for="item in md" v-show="item.visible" :key="item.id" @click="rowClick(item)">
                     <td>{{ item.id }}</td>
                     <td>{{ item.region }}</td>
                     <td>{{ [item.parish, item.location].filter(Boolean).join(', ') }}</td>
-                    <td>{{ item.name }}</td>
+                    <td>{{ item.title }}</td>
                     <td>{{ item.description }}</td>
-                    <td>{{ item.date1 }}</td>
+                    <td>{{ item.date }}</td>
                     <td style="width: 180px">{{ item.type }}</td>
-                    <!-- <td>{{ item.army }}</td> -->
                     <!-- <td>
                         <input v-model="item.name" type="text" />
-                    </td>
-                    <td>
-                        <input v-model="item.description" type="text" />
-                    </td> -->
-                    <td>{{ item.position.lat }}</td>
-                    <td>{{ item.position.lng }}</td>
+                    </td>-->
+                    <td>{{ item.position.lat }},<br/>{{ item.position.lng }}</td>
                     <td style="text-align: center">
                         <input v-model="item.draggable" type="checkbox" />
                     </td>
@@ -54,18 +47,11 @@ export default {
     components: {},
     props: { md: Array },
     data() {
-        return {
-            // markers_all: this.md.concat(this.md2),
-        };
+        return {}
     },
-    // computed: {
-    //     mdFiltered() {
-    //         return this.md.filter( obj => obj.visible === true )
-    //     }
-    // },
     methods: {
-        rowClick(n){
-            this.$parent.centerPopup(n);
+        rowClick(item){
+            this.$parent.centerMyPopup(item);
         }
     },
 };

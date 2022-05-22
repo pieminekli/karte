@@ -18,7 +18,6 @@ export default {
         makeCsv() {
             let markers = this.md;
             // this.$emit("updEvent", markers);
-            // console.log(this.md[92].position)
 
             function checkField(d) {
                 if (typeof d === "string") {
@@ -47,16 +46,19 @@ export default {
                     checkField(m.region),
                     checkField(m.parish),
                     checkField(m.location),
-                    checkField(m.name),
-                    checkField(m.date1),
+                    checkField(m.title),
+                    checkField(m.date),
                     checkField(m.description),
                     checkField(m.type),
-                    checkField(m.date2),
+                    checkField(m.m_date),
+                    checkField(m.m_author),
+                    checkField(m.period),
+                    checkField(m.army),
                     m.position.lat,
                     m.position.lng,
                     m.status,
-                    checkField(m.url),
                     m.locked,
+                    checkField(m.url),
                     m.datetime
                 ].join()
                 csvRows += row + "\r\n";
