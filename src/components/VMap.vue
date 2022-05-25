@@ -3,7 +3,7 @@
         <l-map :zoom.sync="zoom" :center.sync="center" id="map" ref="myMap">
             <l-control-layers :position="'topright'" :collapsed="false" :sort-layers="false" />
             <l-tile-layer
-                v-for="tileProvider in tileProviders"
+                v-for="tileProvider in tileProviders.simple"
                 :key="tileProvider.name"
                 :name="tileProvider.name"
                 :visible="tileProvider.visible"
@@ -15,7 +15,7 @@
                 :subdomains="tileProvider.subdomains"
             />
             <l-wms-tile-layer
-                v-for="wmsLayer in wmsLayers"
+                v-for="wmsLayer in tileProviders.wms"
                 :key="wmsLayer.name"
                 :base-url="wmsLayer.url"
                 :layers="wmsLayer.layers"
@@ -61,24 +61,30 @@
              <l-layer-group
                 layer-type="overlay"
                 name="Bez apbed."
-                :visible.sync="vis1"
+                :visible.sync="vislay[0]"
             ></l-layer-group>
             
             <l-layer-group
                 layer-type="overlay"
                 name="Ar apbed."
-                :visible.sync="vis2"
+                :visible.sync="vislay[1]"
             ></l-layer-group>
 
-            <v-marker-cluster :options="clusterOptions">
+            <v-marker-cluster 
+                :options="{
+                    chunkedLoading: true,
+                    spiderfyOnMaxZoom: false,
+                    showCoverageOnHover: false,
+                    maxClusterRadius: '75',
+                    disableClusteringAtZoom: '11'}"
+            >
                 <l-marker
-                    v-for="marker in mdFiltered"
+                    v-for="marker in mdUpdate"
                     :key="marker.id"
                     :visible="marker.visible"
                     :draggable="marker.draggable"
                     :latLng.sync="marker.position"
-                    :icon="myIcn[+marker.draggable][marker.status][+marker.burial]"
-                    ref="marker"
+                    :icon="myIcn[+marker.draggable][marker.status][marker.burial]"
                     @dragstart="closeMyPopup"
                     @dragend="marker.datetime=dateNow()"
                     @click="openMyPopup(marker)"
@@ -87,7 +93,7 @@
             </v-marker-cluster>
 
         </l-map>
-        <VList :md="mdFiltered" />
+        <VList :md="mdUpdate" />
     </div>
 </template>
 
@@ -149,59 +155,52 @@ const icons = [
     [[greyIconEdit, greyIconEdit], [blueIconEdit, blue2IconEdit], [redIconEdit, redIconEdit], [blueIconEdit, blue2IconEdit]]
 ];
 
-const clusterOptions = {
-    chunkedLoading: true,
-    spiderfyOnMaxZoom: false,
-    showCoverageOnHover: false,
-    maxClusterRadius: "70",
-    disableClusteringAtZoom: "11",
-};
-
-const tileProviders = [
-    {
-        name: "OSM",
-        visible: true,
-        attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OSM</a>',
-        url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    },
-    // {
-    //     name: "Esri",
-    //     visible: false,
-    //     attribution: "Tiles &copy; Esri",
-    //     url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-    // },
-    {
-        name: "J.Sēta",
-        visible: false,
-        attribution: '<a href="https://www.kartes.lv/en" target="_blank">Jāņa Sēta</a>',
-        subdomains: ["wms", "wms1", "wms2", "wms3", "wms4"],
-        url: "https://{s}.kartes.lv/LAUC/wgs/15/{z}/{x}/{y}.png"
-    },
-]
-
-const wmsLayers = [
-    {
-        name: "Orto LKS",
-        visible: false,
-        attribution: '<a href="" target="_blank">LVM</a>',
-        layers: 'public:Orto_LKS',
-        url: "https://lvmgeoserver.lvm.lv/geoserver/ows?"
-    },
-    {
-        name: "Topo10",
-        visible: false,
-        attribution: '<a href="" target="_blank">LVM</a>',
-        layers: 'public:Topo10_contours',
-        url: "https://lvmgeoserver.lvm.lv/geoserver/ows?"
-    },
-    {
-        name: "PSRS",
-        visible: false,
-        attribution: '<a href="" target="_blank">GISnet</a>',
-        layers: 'DT_KOPA',
-        url: "https://www.gisnet.lv/cgi-bin/topo_all?"
-    },         
-]
+const tileProviders = {
+    simple:[
+        {
+            name: "OSM",
+            visible: true,
+            attribution: '&copy; <a target="_blank" href="http://osm.org/copyright">OSM</a>',
+            url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        },
+        // {
+        //     name: "Esri",
+        //     visible: false,
+        //     attribution: "Tiles &copy; Esri",
+        //     url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        // },
+        {
+            name: "J.Sēta",
+            visible: false,
+            attribution: '<a href="https://www.kartes.lv/en" target="_blank">Jāņa Sēta</a>',
+            subdomains: ["wms", "wms1", "wms2", "wms3", "wms4"],
+            url: "https://{s}.kartes.lv/LAUC/wgs/15/{z}/{x}/{y}.png"
+        },
+    ],
+    wms:[
+        {
+            name: "Orto LKS",
+            visible: false,
+            attribution: '<a href="" target="_blank">LVM</a>',
+            layers: 'public:Orto_LKS',
+            url: "https://lvmgeoserver.lvm.lv/geoserver/ows?"
+        },
+        {
+            name: "Topo10",
+            visible: false,
+            attribution: '<a href="" target="_blank">LVM</a>',
+            layers: 'public:Topo10_contours',
+            url: "https://lvmgeoserver.lvm.lv/geoserver/ows?"
+        },
+        {
+            name: "PSRS",
+            visible: false,
+            attribution: '<a href="" target="_blank">GISnet</a>',
+            layers: 'DT_KOPA',
+            url: "https://www.gisnet.lv/cgi-bin/topo_all?"
+        }, 
+    ]
+}
 
 export default {
     name: "VMap",
@@ -214,54 +213,53 @@ export default {
         LControlScale,
         LControlLayers,
         "v-marker-cluster": Vue2LeafletMarkerCluster,
+        "l-wms-tile-layer": LWMSTileLayer,
         VList,
-        "l-wms-tile-layer": LWMSTileLayer
     },
     props: { md: Array },
     data() {
         return {
-            vis1: true,
-            vis2: true,
-            caller: {id:null},
+            vislay: [true, true],
+            caller: {id: null},
             myIcn: icons,
-            isActive: false,
-            clusterOptions: clusterOptions,
             center: [56.74, 24.12],
             zoom: 7,
             tileProviders: tileProviders,
-            wmsLayers: wmsLayers,
-            markers: this.md,
         };
     },
+    mounted() {
+        if (localStorage.vislay) {
+            this.vislay = JSON.parse(localStorage.vislay)
+        }
+    },
+    watch: {
+        vislay() {
+            localStorage.vislay = JSON.stringify(this.vislay)
+        },
+    },
     computed: {
-        mdFiltered() {
+        mdUpdate() {
             return this.md.map(item => {
-                if(item.burial === 0){
-                    item.visible = this.vis1
-                }
-                if(item.burial === 1){
-                    item.visible = this.vis2
-                }
+                item.visible= (item.burial === 0) ? this.vislay[0] : this.vislay[1]
                 return item
-            })
+            });
         }
     },
     methods: {
         dateNow(){
             return new Date().toJSON()
         },
-        centerMyPopup(n) {
+        centerMyPopup(n){
             this.closeMyPopup()
             this.$nextTick(() => {
-                this.$refs.myMap.mapObject.setView(n.position, 13);
+                this.$refs.myMap.mapObject.setView(n.position, (this.zoom >= 13) ? this.zoom : 13); 
                 setTimeout(() => { this.openMyPopup(n) }, 700)
             });
-            
         },
         closeMyPopup(){
             this.$refs.features.mapObject.closePopup()
         },
-        openMyPopup(n) {
+        openMyPopup(n){
             this.caller = n;
             this.$refs.features.mapObject.openPopup(n.position);
             // remove close href

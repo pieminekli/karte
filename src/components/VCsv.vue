@@ -57,6 +57,7 @@ export default {
                     m.position.lat,
                     m.position.lng,
                     m.status,
+                    m.burial,
                     m.locked,
                     checkField(m.url),
                     m.datetime

@@ -4,7 +4,7 @@ import json
 import csv
 
 file_in = 'pieminekli.csv'
-file_out = 'data1.json'
+file_out = 'data.json'
 
 arr = []
 with open(file_in, encoding='utf8') as csv_file:
@@ -30,9 +30,11 @@ for idx, row in enumerate(arr):
     obj1['army'] = row[11]
     obj1['position'] = {'lat': float(row[12]), 'lng': float(row[13])}
     obj1['status'] = int(row[14])
-    obj1['locked'] = int(row[15])
-    obj1['url'] = row[16]
-    obj1['datetime'] = row[17]
+    obj1['burial'] = int(row[15])
+    obj1['locked'] = int(row[16])
+    obj1['url'] = row[17]
+    obj1['datetime'] = row[18]
+
     arr2.append(obj1)
 
 with open(file_out, 'w', encoding='utf8') as outf:
