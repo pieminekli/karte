@@ -4,6 +4,7 @@
             <table>
                 <tr>
                     <th>id</th>
+                    <th>Attēls</th>
                     <th>Reģions</th>
                     <th>Atrašanās vieta</th>
                     <th>Nosaukums</th>
@@ -16,6 +17,10 @@
                 </tr>
                 <tr v-for="item in md" v-show="item.visible" :key="item.id" @click="$parent.centerMyPopup(item)">
                     <td>{{ item.id }}</td>
+                    <td>
+                        <!-- <div class="image" :style="{ backgroundImage: 'url(images/gallery/' + item.url + ')' }" @click="test"></div> -->
+                        <VPreview :itm="item" ref="vpreview"/>
+                    </td>
                     <td>{{ item.region }}</td>
                     <td>{{ [item.parish, item.location].filter(Boolean).join(', ') }}</td>
                     <td>{{ item.title }}</td>
@@ -54,14 +59,15 @@
 </template>
 
 <script>
+import VPreview from './VPreview.vue'
+
 export default {
     name: "VList",
-    components: {},
+    components: { VPreview },
     props: { md: Array },
     data() {
         return {};
-    },
-    methods: {},
+    }
 };
 </script>
 
@@ -87,6 +93,13 @@ export default {
 
 #xlist {
     display: none;
+}
+
+.image{
+    width: 50px;
+    height: 50px;
+    background-size: cover;
+    background-color: #f0eef1;
 }
 
 @media (min-width: 600px) {

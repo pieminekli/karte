@@ -1,18 +1,23 @@
 <template>
-    <a :href="fileurl" :download="filename" @click="makeCsv">Lejupādēt</a>
+    <!-- <a v-if="modified" :class="{modified: modified}" @click="sendData">Saglabāt..</a> -->
+    <a v-if="modified" :class="{modified: modified}" :href="fileurl" :download="filename" @click="makeCsv">Lejuplādēt CSV</a>
+    <a v-else :class="{modified: modified}" :href="fileurl" :download="filename" @click="makeCsv">Lejupādēt CSV</a>
 </template>
 
 <script>
 export default {
     name: "VCsv",
     components: {},
-    props: { md: Array },
+    props: { md: Array, modified: Boolean },
     data() {
         return {
             fileurl: "#",
             filename: null,
+
+            rMessage: null,
         };
     },
+
     methods: {
         // generate csv and download
         makeCsv() {
@@ -74,26 +79,69 @@ export default {
             this.filename = "pieminekli.csv";
             this.fileurl = window.URL.createObjectURL(csvFile);
         },
+
+        sendData(){
+
+            // const uplArr = []
+
+            // for (var n of this.$parent.$refs.vmap.$refs.vlist.$refs.vpreview){
+            //     if(n.$refs.ifile.files.length > 0){
+            //         uplArr.push(n.$refs.ifile.files[0])
+            //         n.resetVal()
+            //     }
+            // }
+
+
+            // var formData = new FormData();
+            
+            // const cleaned_arr = this.md.map(({draggable, visible, edited, previewUrl, ...remainingAttrs}) => remainingAttrs)
+            // const jblob = new Blob([JSON.stringify(cleaned_arr)], {
+            //     type: 'application/json'
+            // });
+
+            // formData.append("_special", "special");
+            // formData.append("json_file", jblob, "file.json");
+
+            // for (const n of uplArr) {
+            //     formData.append('image_file[]', n, 'xxx--' + n.name);
+            // }
+
+            // // console.log(formData.getAll('image_file[]'))
+
+            // this.rMessage = 'saving...'
+ 
+            // setTimeout(() => {
+            //     this.$parent.modified = false
+            // }, 300)
+
+        },
+
     },
 };
 </script>
 
 <style scoped>
 a {
+    cursor: pointer;
     position: absolute;
     top: 0;
-    right: 140px;
+    right: 0;
+    left: 0;
     z-index: 1001;
-    margin: 12px;
+    margin: 12px auto;
     background: rgba(255, 255, 255, 1);
     color: black;
     font-size: 12px;
     text-align: center;
     display: block;
-    padding: 5px;
-    width: 64px;
+    padding: 5px 10px;
+    width: 82px;
     text-decoration: none;
     border-radius: 4px;
     box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.2);
+}
+a.modified {
+    color: white;
+    background: rgb(246, 68, 28);
 }
 </style>

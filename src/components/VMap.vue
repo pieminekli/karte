@@ -9,22 +9,20 @@
                 :visible="tileProvider.visible"
                 :url="tileProvider.url"
                 :attribution="tileProvider.attribution"
-                layer-type="base"
-                :detectRetina="tileProvider.detectRetina"
+                layerType="base"
                 :options="{ minZoom: 1, maxZoom: 20, maxNativeZoom: 18 }"
                 :subdomains="tileProvider.subdomains"
             />
             <l-wms-tile-layer
                 v-for="wmsLayer in tileProviders.wms"
                 :key="wmsLayer.name"
-                :base-url="wmsLayer.url"
-                :layers="wmsLayer.layers"
-                :visible="wmsLayer.visible"
                 :name="wmsLayer.name"
+                :visible="wmsLayer.visible"
+                :baseUrl="wmsLayer.url"
+                :layers="wmsLayer.layers"
                 :attribution="wmsLayer.attribution"
-                :transparent="true"
+                layerType="base"
                 format="image/png"
-                layer-type="base"
                 :options="{ minZoom: 1, maxZoom: 20, maxNativeZoom: 18 }"
             />
 
@@ -32,22 +30,23 @@
 
             <l-layer-group ref="features">
                   <l-popup class="popup-wrap" :options="{offset:[1, -30]}">
-                        <div class="image" :style="{ backgroundImage: 'url(images/gallery/' + caller.id + '.jpg)' }"></div>
+                        <!-- <div class="image" :style="{ backgroundImage: 'url(' + genPreview(caller) + ')' }" @click="clickItem(caller.id)"></div> -->
+                        <!-- <div class="image" @click="clickItem(caller.id)"><img :src="genPreview(caller)" /></div> -->
+                        <div class="image" ><img :src="genPreview(caller)" /></div>
                         <div class="content">
-                            {{ [caller.region, caller.parish, caller.location].filter(Boolean).join(', ') }}<br />
+                            <!-- {{ [caller.region, caller.parish, caller.location].filter(Boolean).join(', ') }}<br /> -->
                             {{ [caller.title, caller.type, caller.date].filter(Boolean).join(', ') }}<br />
                         </div>
                         <div class="manage">
                             <hr />
                             <div>
                                 <div>
-                                    <input type="checkbox" v-model="caller.draggable" :id="'cb' + caller.id" />
-                                    <label :for="'cb' + caller.id">Labot</label>
+                                    <input type="checkbox" v-model="caller.draggable" :id="`cb${caller.id}`" />
+                                    <label :for="`cb${caller.id}`">Labot</label>
                                 </div>
                                 <div>
-                                    <select v-model="caller.status" @change="caller.datetime=dateNow()">
+                                    <select v-model="caller.status" @change="dataChanged(caller)">
                                         <option value=1>Saglabājies</option>
-                                        <option value=2>Tiek diskutēts</option>
                                         <option value=3>Pārvietots</option>
                                         <option value=0>Nojaukts</option>
                                     </select>
@@ -58,16 +57,13 @@
                     </l-popup>
             </l-layer-group>
 
-             <l-layer-group
-                layer-type="overlay"
-                name="Bez apbed."
-                :visible.sync="vislay[0]"
-            ></l-layer-group>
-            
+
             <l-layer-group
-                layer-type="overlay"
-                name="Ar apbed."
-                :visible.sync="vislay[1]"
+                v-for="l in layerControl"
+                :key="l.name"
+                :name="l.name"
+                layerType="overlay"
+                :visible.sync="l.visible"
             ></l-layer-group>
 
             <v-marker-cluster 
@@ -76,34 +72,36 @@
                     spiderfyOnMaxZoom: false,
                     showCoverageOnHover: false,
                     maxClusterRadius: '75',
-                    disableClusteringAtZoom: '11'}"
+                    disableClusteringAtZoom: '11' }"
             >
+
                 <l-marker
                     v-for="marker in mdUpdate"
                     :key="marker.id"
                     :visible="marker.visible"
                     :draggable="marker.draggable"
                     :latLng.sync="marker.position"
-                    :icon="myIcn[+marker.draggable][marker.status][marker.burial]"
+                    :icon="iconsArray[+marker.draggable][marker.status][marker.burial]"
                     @dragstart="closeMyPopup"
-                    @dragend="marker.datetime=dateNow()"
+                    @dragend="dataChanged(marker)"
                     @click="openMyPopup(marker)"
-                >
-                </l-marker>
+                />
+
             </v-marker-cluster>
 
         </l-map>
-        <VList :md="mdUpdate" />
+        <VList :md="mdUpdate" ref="vlist"/>
     </div>
 </template>
 
 <script>
 import "leaflet/dist/leaflet.css";
-import { LMap, LTileLayer, LMarker, LLayerGroup, LPopup, LControlScale, LControlLayers, LWMSTileLayer } from "vue2-leaflet";
+import { LMap, LTileLayer, LMarker, LLayerGroup, LPopup, LControlScale, LControlLayers, LWMSTileLayer} from "vue2-leaflet";
 import Vue2LeafletMarkerCluster from "vue2-leaflet-markercluster";
 
 import { Icon } from "leaflet";
 import VList from './VList.vue'
+import VSend from './VPreview.vue'
 
 delete Icon.Default.prototype._getIconUrl;
 var baseIcon = Icon.Default.extend({
@@ -169,13 +167,13 @@ const tileProviders = {
         //     attribution: "Tiles &copy; Esri",
         //     url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
         // },
-        {
-            name: "J.Sēta",
-            visible: false,
-            attribution: '<a href="https://www.kartes.lv/en" target="_blank">Jāņa Sēta</a>',
-            subdomains: ["wms", "wms1", "wms2", "wms3", "wms4"],
-            url: "https://{s}.kartes.lv/LAUC/wgs/15/{z}/{x}/{y}.png"
-        },
+        // {
+        //     name: "J.Sēta",
+        //     visible: false,
+        //     attribution: '<a href="https://www.kartes.lv/en" target="_blank">Jāņa Sēta</a>',
+        //     subdomains: ["wms", "wms1", "wms2", "wms3", "wms4"],
+        //     url: "https://{s}.kartes.lv/LAUC/wgs/15/{z}/{x}/{y}.png"
+        // },
     ],
     wms:[
         {
@@ -219,49 +217,75 @@ export default {
     props: { md: Array },
     data() {
         return {
-            vislay: [true, true],
-            caller: {id: null},
-            myIcn: icons,
+            // dataChanged: false,
+            layerControl: [
+                { name: "Ar apbed. (284)", visible: true },
+                { name: "Bez apbed. (313)", visible: true }
+            ],
+            currPopId: null,
+            caller: { id: null, url: '0.jpg' },
+            iconsArray: icons,
             center: [56.74, 24.12],
             zoom: 7,
             tileProviders: tileProviders,
         };
     },
     mounted() {
-        if (localStorage.vislay) {
-            this.vislay = JSON.parse(localStorage.vislay)
+        if (localStorage.layerControl) {
+            this.layerControl = JSON.parse(localStorage.layerControl)
         }
     },
     watch: {
-        vislay() {
-            localStorage.vislay = JSON.stringify(this.vislay)
+        layerControl: {
+            handler(){
+                localStorage.layerControl = JSON.stringify(this.layerControl)
+            },
+            deep: true
         },
     },
     computed: {
         mdUpdate() {
             return this.md.map(item => {
-                item.visible= (item.burial === 0) ? this.vislay[0] : this.vislay[1]
+                item.visible = (item.burial === 1) ? this.layerControl[0].visible : this.layerControl[1].visible
                 return item
             });
-        }
+        }  
     },
     methods: {
+        genPreview(item){
+            return item.edited? item.previewUrl : 'images/gallery/' + item.url
+        },
+        clickItem(n){
+            const i = this.$refs.vlist.$refs.vpreview.find(obj => obj.item.id === n)
+            i.$refs.ifile.click()
+        },
+        dataChanged(n){
+            this.$parent.modified = true
+            if(n){
+                n.datetime = this.dateNow()
+            }
+        },
         dateNow(){
             return new Date().toJSON()
         },
         centerMyPopup(n){
-            this.closeMyPopup()
-            this.$nextTick(() => {
-                this.$refs.myMap.mapObject.setView(n.position, (this.zoom >= 13) ? this.zoom : 13); 
-                setTimeout(() => { this.openMyPopup(n) }, 700)
-            });
+            if (n.id !== this.currPopId ){
+                this.closeMyPopup()
+                this.$nextTick(() => {
+                    this.$refs.myMap.mapObject.setView(n.position, (this.zoom >= 13) ? this.zoom : 13);
+                    setTimeout(() => { this.openMyPopup(n) }, 700)
+                });
+            }
         },
         closeMyPopup(){
             this.$refs.features.mapObject.closePopup()
+            // this.popupClosed = true
         },
         openMyPopup(n){
             this.caller = n;
             this.$refs.features.mapObject.openPopup(n.position);
+            // this.popupClosed = false
+            this.currPopId = n.id
             // remove close href
             document.querySelector(".leaflet-popup-close-button").removeAttribute("href")
         },
@@ -336,10 +360,16 @@ export default {
 }
 
 .popup-wrap .image{
+    cursor: pointer;
     width: 70px;
     height: 70px;
-    background-size: cover;
-    background-color: #f0eef1;
+    /* background-size: cover;
+    background-color: #f0eef1; */
+}
+.popup-wrap .image img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .popup-wrap .content{
