@@ -126,16 +126,16 @@ a {
     position: absolute;
     top: 0;
     right: 0;
-    left: 0;
+    left: auto;
     z-index: 1001;
-    margin: 12px auto;
+    margin: 168px 12px 0;
     background: rgba(255, 255, 255, 1);
     color: black;
     font-size: 12px;
     text-align: center;
     display: block;
     padding: 5px 10px;
-    width: 82px;
+    width: 119px;
     text-decoration: none;
     border-radius: 4px;
     box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.2);
@@ -143,5 +143,12 @@ a {
 a.modified {
     color: white;
     background: rgb(246, 68, 28);
+}
+
+@media (min-width: 600px) {
+    a{
+        left: 0;
+        margin: 12px auto 0;
+    }
 }
 </style>
