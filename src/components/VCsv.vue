@@ -128,7 +128,7 @@ a {
     right: 0;
     left: 0;
     z-index: 1001;
-    margin: 56px 12px 0;
+    margin: 12px 56px 0;
     background: rgba(255, 255, 255, 1);
     color: black;
     font-size: 12px;
