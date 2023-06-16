@@ -135,7 +135,7 @@ a {
     text-align: center;
     display: block;
     padding: 5px 10px;
-    width: 119px;
+    width: 109px;
     text-decoration: none;
     border-radius: 4px;
     box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.2);

@@ -419,4 +419,11 @@ export default {
 #map .marker-cluster-medium {
     background-color: rgba(246, 190, 58, 0.448);
 }
+
+.leaflet-control-layers label {
+    font-size: 12px;
+}
+.leaflet-container {
+    font-family: 'Roboto', Arial, Helvetica, sans-serif;
+}
 </style>
